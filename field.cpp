@@ -36,7 +36,7 @@ bool Field::can_move_to(int x, int y){
 }
 
 void Field::print_field(){
-    for (int y=m_height - 1; y >= 0; y){
+    for (int y=m_height - 1; y >= 0; y++){
         for (int x=0; x < m_width; x++){
             if (m_grid[y][x].passable){
                 std::cout << ". ";
