@@ -1,4 +1,4 @@
-#include "field.hpp"
+#include "Field.hpp"
 #include <iostream>
 
 Cell::Cell(bool passable) : passable(passable){}
@@ -14,21 +14,23 @@ Field::Field(int width, int height){
 
     m_grid.resize(m_height, std::vector<Cell>(m_width)); 
 }
+int Field::get_width() {return m_width; }
+int Field::get_height() {return m_height; }
 
-bool Field::validate(int x, int y){
+bool Field::validate_position(int x, int y){
     return (x >= 0 && y >= 0 && x < m_width && y < m_height);
 }
 
 void Field::set_obstacle(int x, int y){
-    if (validate(x, y)) m_grid[y][x].passable = false;
+    if (validate_position(x, y)) m_grid[y][x].passable = false;
 }
 
 void Field::remove_obstacle(int x, int y){
-    if (validate(x, y)) m_grid[y][x].passable = true;
+    if (validate_position(x, y)) m_grid[y][x].passable = true;
 }
 
 bool Field::can_move_to(int x, int y){
-    if (validate(x, y)){
+    if (validate_position(x, y)){
         return m_grid[y][x].passable;
     } else {
         return false;
@@ -36,7 +38,7 @@ bool Field::can_move_to(int x, int y){
 }
 
 void Field::print_field(){
-    for (int y=m_height - 1; y >= 0; y++){
+    for (int y=m_height - 1; y >= 0; y--){
         for (int x=0; x < m_width; x++){
             if (m_grid[y][x].passable){
                 std::cout << ". ";

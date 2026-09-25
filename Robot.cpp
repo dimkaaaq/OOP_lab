@@ -1,10 +1,10 @@
-#include "robot.hpp"
-#include "field.hpp"
+#include "Robot.hpp"
+#include "Field.hpp"
 #include <vector>
 #include <iostream>
 
 Robot::Robot(std::string team, int max_health, int current_health, int current_exp, int required_exp, int damage)
-    : team(team), max_health(max_health), current_health(current_health), current_exp(current_exp), required_exp(required_exp), damage(damage) {}
+    : team(team), max_health(max_health), current_health(current_health), current_exp(current_exp), required_exp(required_exp), damage(damage), speed(speed), current_energy(current_energy),  max_energy(max_energy) {}
 void Robot::expand_max_health(int new_max_health){
     max_health = new_max_health;
 }
@@ -31,7 +31,19 @@ void Robot::decrease_damage(int value){
     } else {
         damage -= value;
     }
+}
+int Robot::get_energy() const { return current_energy; }
+int Robot::get_max_energy() const { return max_energy; }
+void Robot::increase_speed(int value){
+    speed += value;
 }        
+void Robot::decrease_speed(int value){
+    if (value > speed){
+        speed = 0;
+    } else {
+        speed -= value;
+    }
+}
 void Robot::action(Robot& hero, int value){
     if (hero.team == this->team){
         hero.get_heal(value);
@@ -50,6 +62,7 @@ void Robot::RankUp()
 
     }
 }
+
 void Robot::move(Field& field, const std::string& direction, std::vector<Robot*>& all_robots){
     int next_x = this->x;
     int next_y = this->y;

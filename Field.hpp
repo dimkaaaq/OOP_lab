@@ -25,7 +25,7 @@ public:
     void remove_obstacle(int x, int y);
     bool can_move_to(int x, int y);
     void print_field();
-    bool validate(int x, int y);
+    bool validate_position(int x, int y);
 };
 
 #endif
