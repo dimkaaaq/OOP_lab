@@ -1,51 +1,29 @@
 #include "Field.hpp"
-#include <iostream>
 
-Cell::Cell(bool passable) : passable(passable){}
+Field::Field(int width, int height {
+    if (width > MAX_SIZE) width_ = MAX_SIZE;
+    else if (width < MIN_SIZE) width_ = MIN_SIZE;
+    else width_ = width;
 
-Field::Field(int width, int height){
-    if (width > MAX_SIZE) m_width = MAX_SIZE;
-    else if (width < MIN_SIZE) m_width = MIN_SIZE;
-    else m_width = width;
+    if (height > MAX_SIZE) height_ = MAX_SIZE;
+    else if (height < MIN_SIZE) height_ = MIN_SIZE;
+    else height_ = height;
 
-    if (height > MAX_SIZE) m_height = MAX_SIZE;
-    else if (height < MIN_SIZE) m_height = MIN_SIZE;
-    else m_height = height;
-
-    m_grid.resize(m_height, std::vector<Cell>(m_width)); 
-}
-int Field::get_width() {return m_width; }
-int Field::get_height() {return m_height; }
-
-bool Field::validate_position(int x, int y){
-    return (x >= 0 && y >= 0 && x < m_width && y < m_height);
+    grid_.resize(height_, std::vector<Cell>(width_)); 
 }
 
-void Field::set_obstacle(int x, int y){
-    if (validate_position(x, y)) m_grid[y][x].passable = false;
+bool Field::IsValidPosition(int x, int y) const {
+    return (x >= 0 && y >= 0 && x < width_ && y < height_);
 }
 
-void Field::remove_obstacle(int x, int y){
-    if (validate_position(x, y)) m_grid[y][x].passable = true;
+void Field::SetObstacle(int x, int y) {
+    if (IsValidPosition(x, y)) grid_[y][x].SetPassable(false);
 }
 
-bool Field::can_move_to(int x, int y){
-    if (validate_position(x, y)){
-        return m_grid[y][x].passable;
-    } else {
-        return false;
-    }
+void Field::RemoveObstacle(int x, int y) {
+    if (IsValidPosition(x, y)) grid_[y][x].SetPassable(true);
 }
 
-void Field::print_field(){
-    for (int y=m_height - 1; y >= 0; y--){
-        for (int x=0; x < m_width; x++){
-            if (m_grid[y][x].passable){
-                std::cout << ". ";
-            } else {
-                std::cout << "# ";
-            }
-        }
-        std::cout << "\n";
-    }
+bool Field::CanMoveTo(int x, int y) const {
+    return IsValidPosition(x, y) && grid_[y][x].IsPassable();
 }

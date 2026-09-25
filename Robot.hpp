@@ -1,46 +1,56 @@
+#ifndef ROBOT_HPP
+#define ROBOT_HPP
+
 #include <string>
-#include <vector>
-#ifndef ROBOT
-#define ROBOT
 
-class Field;
-
-class Robot{
-private:
-
-    std::string team;
-    int max_health;
-    int current_health;
-    int current_exp;
-    int required_exp = 100;
-    int damage;
-    int rank = 1;
-    int speed = 1;
-    int max_energy = 100;
-    int current_energy = 100;
-
+class Robot {
 public:
+    Robot(std::string team, int max_health, int damage, int max_energy,
+          int required_exp, int x = 0, int y = 0);
 
-    int x = 0;
-    int y = 0;
+    std::string GetTeam() const { return team_; }
+    int GetDamage() const { return damage_; }
+    int GetExp() const { return current_exp_; }
+    int GetRequiredExp() const { return required_exp_; }
+    int GetEnergy() const { return current_energy_; }
+    int GetMaxEnergy() const { return max_energy_; }
+    int GetHealth() const { return current_health_; }
+    int GetMaxHealth() const { return max_health_; }
+    int GetRank() const { return rank_; }
+    int GetSpeed() const { return speed_; }
+    int GetX() const { return x_; }
+    int GetY() const { return y_; }
 
-    Robot (std::string team, int max_health, int current_health, int current_exp, int required_exp, int damage);
+    bool IsAlive() const { return current_health_ > 0; }
 
-    int get_energy() const { return current_energy; }
-    int get_max_energy() const { return max_energy; }
+    void TakeDamage(int value);
+    void TakeHeal(int value);
+    void RestoreEnergy(int value);
+    void SpendEnergy(int value);
+    void GainExp(int value);
 
-    void increase_speed(int value);
-    void decrease_speed(int value);
-    void expand_max_health(int new_max_health);
-    void get_damage(int value);
-    void get_heal(int value);
-    void get_exp(int value);
-    void increase_damage(int value);
-    void decrease_damage(int value);        
-    void action(Robot& hero, int value);
-    void RankUp();
+    void IncreaseMaxHealth(int new_max_health);
+    void IncreaseDamage(int value);
+    void IncreaseSpeed(int value);
 
-    void move(Field& field, const std::string& direction, std::vector<Robot*>& all_robots);
+    void Interact(Robot& target, int heal_value);
+    void MoveTo(int x, int y);
+
+private:
+    void TryRankUp();
+
+    std::string team_;
+    int x_;
+    int y_;
+    int max_health_;
+    int current_health_;
+    int damage_;
+    int max_energy_;
+    int current_energy_;
+    int current_exp_;
+    int required_exp_;
+    int rank_;
+    int speed_;
 };
 
 #endif

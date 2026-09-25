@@ -1,20 +1,18 @@
-#include <iostream>
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
-enum InputCommand {
-    top,
-    left,
-    right,
-    down
-
+enum class Direction {
+    Up,
+    Down, 
+    Left, 
+    Right,
+    Invalid
 };
 
 
 class InputController {
 public:
-    InputController();
+    Direction GetCommand();
+};
 
-    InputCommand getCommand();
-private:
-    std::string getPressedKey(); // or char
-}
-
+#endif

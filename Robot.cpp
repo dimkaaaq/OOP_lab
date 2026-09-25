@@ -1,89 +1,92 @@
 #include "Robot.hpp"
-#include "Field.hpp"
-#include <vector>
-#include <iostream>
 
-Robot::Robot(std::string team, int max_health, int current_health, int current_exp, int required_exp, int damage)
-    : team(team), max_health(max_health), current_health(current_health), current_exp(current_exp), required_exp(required_exp), damage(damage), speed(speed), current_energy(current_energy),  max_energy(max_energy) {}
-void Robot::expand_max_health(int new_max_health){
-    max_health = new_max_health;
-}
-void Robot::get_damage(int value){
-    if (value > current_health){
-        current_health = 0;
-    } else {
-        current_health -= value;
-    }
-}
-void Robot::get_heal(int value){
-    current_health += value;
-}
-void Robot::get_exp(int value){
-    current_exp += value;
-    RankUp();
-}
-void Robot::increase_damage(int value){
-    damage += value;
-}
-void Robot::decrease_damage(int value){
-    if (value > damage){
-        damage = 0;
-    } else {
-        damage -= value;
-    }
-}
-int Robot::get_energy() const { return current_energy; }
-int Robot::get_max_energy() const { return max_energy; }
-void Robot::increase_speed(int value){
-    speed += value;
-}        
-void Robot::decrease_speed(int value){
-    if (value > speed){
-        speed = 0;
-    } else {
-        speed -= value;
-    }
-}
-void Robot::action(Robot& hero, int value){
-    if (hero.team == this->team){
-        hero.get_heal(value);
-    } else {
-        hero.get_damage(this->damage);
-    }
-}
-void Robot::RankUp()
-{
-    if(current_exp >= required_exp){
-    rank += 1;
-    max_health += 20;
-    damage += 5;
-    current_exp -= required_exp;
-    required_exp *= 1.3;
+#include <stdexcept>
 
+Robot::Robot(std::string team, int max_health, int damage, int max_energy,
+             int required_exp, int x, int y)
+    : team_(team),
+      x_(x),
+      y_(y),
+      max_health_(max_health),
+      current_health_(max_health),
+      damage_(damage),
+      max_energy_(max_energy),
+      current_energy_(max_energy),
+      current_exp_(0),
+      required_exp_(required_exp),
+      rank_(1),
+      speed_(1) {}
+
+void Robot::TakeDamage(int value) {
+    current_health_ -= value;
+    if (current_health_ < 0) {
+        current_health_ = 0;
     }
 }
 
-void Robot::move(Field& field, const std::string& direction, std::vector<Robot*>& all_robots){
-    int next_x = this->x;
-    int next_y = this->y;
+void Robot::TakeHeal(int value) {
+    current_health_ += value;
+    if (current_health_ > max_health_) {
+        current_health_ = max_health_;
+    }
+}
 
-    if (direction == "up") next_y++;
-    else if (direction == "down") next_y--;
-    else if (direction == "right") next_x++;
-    else if (direction == "left") next_x--;
+void Robot::RestoreEnergy(int value) {
+    current_energy_ += value;
+    if (current_energy_ > max_energy_) {
+        current_energy_ = max_energy_;
+    }
+}
 
-    if (!field.can_move_to(next_x, next_y)){
-        std::cout << "Робот не может переместиться в (" << next_x << ", "<< next_y<<"): клетка непроходима!\n";
+void Robot::SpendEnergy(int value) {
+    current_energy_ -= value;
+    if (current_energy_ < 0) {
+        current_energy_ = 0;
+    }
+}
+
+void Robot::GainExp(int value) {
+    current_exp_ += value;
+    TryRankUp();
+}
+
+void Robot::IncreaseMaxHealth(int new_max_health) {
+    max_health_ = new_max_health;
+}
+
+void Robot::IncreaseDamage(int value) {
+    damage_ += value;
+}
+
+void Robot::IncreaseSpeed(int value) {
+    speed_ += value;
+}
+
+void Robot::Interact(Robot& target, int heal_value) {
+    if (&target == this) {
         return;
     }
-    for (Robot* other : all_robots){
-        if (other == this) continue;
-        if (other->x == next_x && other->y == next_y){
-            this->action(*other, 10);
-            return;
-        }
+    if (target.GetTeam() == team_) {
+        target.TakeHeal(heal_value);
+    } else {
+        target.TakeDamage(damage_);
     }
+}
 
-    this->x = next_x;
-    this->y = next_y;
+void Robot::MoveTo(int x, int y) {
+    if (x < 0 || y < 0) {
+        throw std::invalid_argument("Coordinates must be non-negative");
+    }
+    x_ = x;
+    y_ = y;
+}
+
+void Robot::TryRankUp() {
+    while (current_exp_ >= required_exp_) {
+        current_exp_ -= required_exp_;
+        required_exp_ = required_exp_ * 13 / 10;
+        ++rank_;
+        max_health_ += 20;
+        damage_ += 5;
+    }
 }
