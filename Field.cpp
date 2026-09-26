@@ -1,6 +1,6 @@
 #include "Field.hpp"
 
-Field::Field(int width, int height {
+Field::Field(int width, int height){
     if (width > MAX_SIZE) width_ = MAX_SIZE;
     else if (width < MIN_SIZE) width_ = MIN_SIZE;
     else width_ = width;

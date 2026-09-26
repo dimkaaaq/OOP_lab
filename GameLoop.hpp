@@ -1,30 +1,40 @@
-#include <iostream>
+#ifndef GAME_LOOP_H
+#define GAME_LOOP_H
+
 #include <vector>
-#include <string>
-#include "Robot.hpp"
-#include "Field.hpp"
 #include <random>
 
-class GameLoop{
+#include "Robot.hpp"
+#include "Field.hpp"
+#include "InputController.hpp"
+#include "Renderer.hpp"
+
+class GameLoop {
 public:
-    GameLoop(Field& field, Robot& player,
-    const std::vector<Robot*>& enemies);
+    GameLoop(Field& field, Robot& player, std::vector<Robot*> enemies, Renderer& renderer, InputController& input);
 
-    void start();
+    void Start();
 private:
-    static const int energy_consumption = 10;
+    static const int energy_restore_amount = 10;
+    static const int heal_amount = 10;
 
-    Field& field;
-    Robot& player;
-    
-    std::vector<Robot*> enemies;
-    std::vector<Robot*> allRobots;
+    void PlayerTurn();
+    void EnemyTurn();
+    void TryMove(Robot& robot, Direction dir);
+    void RestoreEnergy();
+    bool IsGameOver() const;
+    bool IsPlayerWin() const;
+    Direction GetRandomDirection();
 
-    int turn = 0;
-    bool GameOver = false;
+    Field& field_;
+    Robot& player_;
+    std::vector<Robot*> enemies_;
+    Renderer& renderer_;
+    InputController& input_;
+    std::mt19937 rng_;
 
-    void playerturn();
-    void enemyturn();
+    int turn_ = 0;
+    bool is_game_over_ = false;
+};
 
-
-}
+#endif
