@@ -18,7 +18,7 @@ private:
     static const int energy_restore_amount = 10;
     static const int heal_amount = 10;
 
-    void PlayerTurn();
+    int PlayerTurn();
     void EnemyTurn();
     void TryMove(Robot& robot, Direction dir);
     void RestoreEnergy();

@@ -1,6 +1,7 @@
 #include "Robot.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 Robot::Robot(std::string team, int max_health, int damage, int max_energy,
              int required_exp, int x, int y)
@@ -52,6 +53,9 @@ void Robot::GainExp(int value) {
 
 void Robot::IncreaseMaxHealth(int new_max_health) {
     max_health_ = new_max_health;
+    if (new_max_health < current_health_) {
+        current_health_ = new_max_health;
+    }
 }
 
 void Robot::IncreaseDamage(int value) {
@@ -69,7 +73,7 @@ void Robot::Interact(Robot& target, int heal_value) {
     if (target.GetTeam() == team_) {
         target.TakeHeal(heal_value);
     } else {
-        target.TakeDamage(damage_);
+        target.TakeDamage(damage_);;
     }
 }
 

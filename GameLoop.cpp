@@ -76,9 +76,14 @@ void GameLoop::TryMove(Robot& robot, Direction dir) {
     robot.MoveTo(new_x, new_y);
 }
 
-void GameLoop::PlayerTurn() {
+int GameLoop::PlayerTurn() {
     Direction dir = input_.GetCommand();
+    if (dir == Direction::Invalid) {
+        std::cout << "Invalid command. Please use W/A/S/D to move." << std::endl;
+        return 0;
+    }
     TryMove(player_, dir);
+    return 1;
 }
 
 void GameLoop::EnemyTurn() {
@@ -93,10 +98,11 @@ void GameLoop::EnemyTurn() {
 void GameLoop::Start() {
     while (!IsGameOver()) {
         renderer_.Render(field_, player_, enemies_);
-        PlayerTurn();
-        renderer_.Render(field_, player_, enemies_);
+        if (PlayerTurn() == 1) {
+            renderer_.Render(field_, player_, enemies_);
+            EnemyTurn();
+        }
         if (IsGameOver()) break;
-        EnemyTurn();
         RestoreEnergy();
         turn_++;
     }
