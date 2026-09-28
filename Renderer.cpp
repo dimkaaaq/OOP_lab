@@ -1,9 +1,8 @@
 #include "Renderer.hpp"
-
 #include <iostream>
+#include <cstdlib>
 
 void Renderer::Render(const Field& field, const Robot& player, const std::vector<Robot*>& enemies) {
-    ClearScreen();
     for (int y = field.GetHeight() - 1; y >= 0; y--) {
         for (int x = 0; x < field.GetWidth(); x++) {
             char symbol;
@@ -28,6 +27,12 @@ void Renderer::Render(const Field& field, const Robot& player, const std::vector
         }
         std::cout << '\n';
     }
+    std::cout << '\n' << "PLAYER STATS:" << '\n';
+    std::cout << '\n' << "Health " << player.GetHealth() << " HP" << '\n';
+    std::cout << '\n' << "Damage "<< player.GetDamage() << " DMG" << '\n';
+    std::cout << '\n' << "Rank " << player.GetRank() << " LVL" << '\n';
+    std::cout << '\n' << "Experience " << player.GetExp() << " / " << player.GetRequiredExp() << " EXP" << '\n' << '\n';
+
 }
 
 void Renderer::RenderResult(bool player_won) {
@@ -39,5 +44,9 @@ void Renderer::RenderResult(bool player_won) {
 }
 
 void Renderer::ClearScreen() {
-    std::cout << "\033[2J\033[H";
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }

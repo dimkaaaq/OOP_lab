@@ -1,5 +1,4 @@
 #include "GameLoop.hpp"
-
 #include <random>
 #include <iostream>
 
@@ -50,8 +49,8 @@ void GameLoop::TryMove(Robot& robot, Direction dir) {
     int new_y = robot.GetY();
 
     switch(dir) {
-        case Direction::Up: new_y++; break;
-        case Direction::Down: new_y--; break;
+        case Direction::Up: new_y += robot.GetSpeed(); break;
+        case Direction::Down: new_y -= robot.GetSpeed(); break;
         case Direction::Left: new_x--; break;
         case Direction::Right: new_x++; break;
         case Direction::Invalid: return;
@@ -97,9 +96,9 @@ void GameLoop::EnemyTurn() {
 
 void GameLoop::Start() {
     while (!IsGameOver()) {
+        renderer_.ClearScreen();
         renderer_.Render(field_, player_, enemies_);
         if (PlayerTurn() == 1) {
-            renderer_.Render(field_, player_, enemies_);
             EnemyTurn();
         }
         if (IsGameOver()) break;

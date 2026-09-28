@@ -74,6 +74,7 @@ void Robot::Interact(Robot& target, int heal_value) {
         target.TakeHeal(heal_value);
     } else {
         target.TakeDamage(damage_);;
+        std::cout << target.current_health_;
     }
 }
 
