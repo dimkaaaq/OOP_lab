@@ -1,16 +1,19 @@
 #include "InputController.hpp"
 
 #include <iostream>
+#include <string>
 
-Direction InputController::GetCommand() {
-    char input;
+Commands InputController::GetCommand() {
+    std::string input;
     std::cin >> input;
-
-    switch (input) { 
-        case 'w': case 'W': return Direction::Up;
-        case 's': case 'S': return Direction::Down;
-        case 'a': case 'A': return Direction::Left;
-        case 'd': case 'D': return Direction::Right;
-        default: return Direction::Invalid;
+    if (input.size() != 1) {
+        return Commands::Invalid;
+    }
+    switch (input[0]) { 
+        case 'w': case 'W': return Commands::Up;
+        case 's': case 'S': return Commands::Down;
+        case 'a': case 'A': return Commands::Left;
+        case 'd': case 'D': return Commands::Right;
+        default: return Commands::Invalid;
     }
 }
