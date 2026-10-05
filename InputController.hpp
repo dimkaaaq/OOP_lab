@@ -1,7 +1,7 @@
 #ifndef CONTROLLER_HPP
 #define CONTROLLER_HPP
 
-enum class Direction {
+enum class Commands {
     Up,
     Down, 
     Left, 
@@ -12,7 +12,7 @@ enum class Direction {
 
 class InputController {
 public:
-    Direction GetCommand();
+    Commands GetCommand();
 };
 
 #endif

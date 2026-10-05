@@ -4,6 +4,7 @@
 #include <vector>
 #include "Field.hpp"
 #include "Robot.hpp"
+#include "Cell.hpp"
 
 class Renderer {
 public:

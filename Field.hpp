@@ -8,7 +8,7 @@
 class Field {
 public:
     Field(int width, int height);
-
+    const Cell& GetCell(int x, int y) const;
     int GetWidth() const { return width_; }
     int GetHeight() const { return height_; }
     
@@ -16,10 +16,13 @@ public:
     bool IsValidPosition(int x, int y) const;
     void SetObstacle(int x, int y);
     void RemoveObstacle(int x, int y);
+    int GetCellPassability(int x, int y) const;  
+    void SetPassability(int x, int y, int value);
+    Field GenerateField();
 
 private:
-    static const int MIN_SIZE = 3;
-    static const int MAX_SIZE = 100;
+    static constexpr int kMinSize = 3;
+    static constexpr int kMaxSize = 100;
 
     int width_;
     int height_;

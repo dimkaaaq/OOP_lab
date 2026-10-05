@@ -1,14 +1,12 @@
 #ifndef ROBOT_HPP
 #define ROBOT_HPP
 
-#include <string>
-
 class Robot {
 public:
-    Robot(std::string team, int max_health, int damage, int max_energy,
-          int required_exp, int x = 0, int y = 0);
+    Robot(int team, int max_health, int damage, int max_energy,
+          int required_exp, int x = 0, int y = 0, int speed = 1);
 
-    std::string GetTeam() const { return team_; }
+    int GetTeam() const { return team_; }
     int GetDamage() const { return damage_; }
     int GetExp() const { return current_exp_; }
     int GetRequiredExp() const { return required_exp_; }
@@ -39,7 +37,7 @@ public:
 private:
     void TryRankUp();
 
-    std::string team_;
+    int team_;
     int x_;
     int y_;
     int max_health_;
@@ -50,7 +48,7 @@ private:
     int current_exp_;
     int required_exp_;
     int rank_;
-    int speed_;
+    int speed_ = 1;
 };
 
 #endif

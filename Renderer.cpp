@@ -14,12 +14,15 @@ void Renderer::Render(const Field& field, const Robot& player, const std::vector
 
                     }
                 }
-            if (player.GetX() == x && player.GetY() == y) {
+            if (player.GetX() == x && player.GetY() == y && player.IsAlive()) {
                 symbol = 'P';
             } else if(has_enemy) {
                 symbol = 'E';
             } else if (field.CanMoveTo(x, y)){
-                symbol = '.';
+                int passability = field.GetCellPassability(x, y);
+                if (passability == 1) symbol = '.';
+                if (passability == 2) symbol = '~';
+                if (passability == 3) symbol = '&';
             } else {
                 symbol = '#';
             }

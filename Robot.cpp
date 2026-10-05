@@ -1,10 +1,9 @@
 #include "Robot.hpp"
 
 #include <stdexcept>
-#include <iostream>
 
-Robot::Robot(std::string team, int max_health, int damage, int max_energy,
-             int required_exp, int x, int y)
+Robot::Robot(int team, int max_health, int damage, int max_energy,
+             int required_exp, int x, int y, int speed)
     : team_(team),
       x_(x),
       y_(y),
@@ -16,7 +15,7 @@ Robot::Robot(std::string team, int max_health, int damage, int max_energy,
       current_exp_(0),
       required_exp_(required_exp),
       rank_(1),
-      speed_(1) {}
+      speed_(speed) {}
 
 void Robot::TakeDamage(int value) {
     current_health_ -= value;
@@ -73,14 +72,13 @@ void Robot::Interact(Robot& target, int heal_value) {
     if (target.GetTeam() == team_) {
         target.TakeHeal(heal_value);
     } else {
-        target.TakeDamage(damage_);;
-        std::cout << target.current_health_;
+        target.TakeDamage(damage_);
     }
 }
 
 void Robot::MoveTo(int x, int y) {
     if (x < 0 || y < 0) {
-        throw std::invalid_argument("Coordinates must be non-negative");
+        return;
     }
     x_ = x;
     y_ = y;
