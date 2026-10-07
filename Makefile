@@ -1,15 +1,15 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic
-TARGET = game
-SRCS = $(wildcard *.cpp)
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Iinclude
+SRCS = $(wildcard src/*.cpp)
+TARGET = build/game
 
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX)	$(CXXFLAGS)	$(SRCS) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET)
 
 clean:
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) src/*.o
 
 run: all
 	./$(TARGET)

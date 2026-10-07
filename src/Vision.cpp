@@ -1,13 +1,13 @@
-#include "vision.hpp"
+#include "Vision.hpp"
 
 Vision::Vision(int width, int height)
- : width_(width), height_(height), visible_(width, std::vector<bool>(height, false)),
-    explored_(width, std::vector<bool>(height, false)){}
+ : width_(width), height_(height), visible_(height, std::vector<bool>(width, false)),
+    explored_(height, std::vector<bool>(width, false)){}
 
 void Vision::Update(const Field& field, int px, int py, int radius) {
     for (int y = 0; y < height_; ++y){
         for (int x = 0; x < width_; ++x){
-            visible_[x][y] = false;
+            visible_[y][x] = false;
         }
     }
 
@@ -18,18 +18,18 @@ void Vision::Update(const Field& field, int px, int py, int radius) {
             int x = px + dx;
             int y = py + dy;
             if (!field.IsValidPosition(x, y)) continue;
-            visible_[x][y] = true;
-            explored_[x][y] = true;
+            visible_[y][x] = true;
+            explored_[y][x] = true;
         }
     }
 }
 
 bool Vision::IsVisible(int x, int y) const {
     if (x < 0 || y < 0 || x >= width_ || y >= height_) return false;
-    return visible_[x][y];
+    return visible_[y][x];
 }
 
 bool Vision::IsExplored(int x, int y) const {
     if (x < 0 || y < 0 || x >= width_ || y >= height_) return false;
-    return explored_[x][y];
+    return explored_[y][x];
 }

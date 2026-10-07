@@ -7,7 +7,7 @@
 class Vision {
 public:
     Vision(int width, int height);
-    void Update(const Field& Field, int px, int py, int radius);
+    void Update(const Field& field, int px, int py, int radius);
 
     bool IsVisible(int x, int y) const;
     bool IsExplored(int x, int y) const;
@@ -16,6 +16,6 @@ private:
     int height_;
     std::vector<std::vector<bool>> visible_;
     std::vector<std::vector<bool>> explored_;
-};
+};  
 
 #endif

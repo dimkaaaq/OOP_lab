@@ -1,5 +1,6 @@
 #include "Field.hpp"
 #include "Robot.hpp"
+#include "Cell.hpp"
 
 Field::Field(int width, int height){
     if (width > kMaxSize) width_ = kMaxSize;
@@ -32,7 +33,6 @@ bool Field::CanMoveTo(int x, int y) const {
 Field Field::GenerateField() {
     Field field = Field(20, 14);
 
-    // ---------- Стены (#) ----------
     for (int x = 2; x <= 6; ++x)   field.SetObstacle(x, 12);
     for (int x = 13; x <= 17; ++x) field.SetObstacle(x, 12);
 
@@ -47,29 +47,21 @@ Field Field::GenerateField() {
     }
     for (int x = 7; x <= 12; ++x)  field.SetObstacle(x, 2);
 
-    // ---------- Замедление (~, passability = 2) ----------
-    // Песок слева-внизу
     for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 5, 2);
     for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 6, 2);
 
-    // Песок справа-вверху
     for (int x = 14; x <= 18; ++x) field.SetPassability(x, 9,  2);
     for (int x = 14; x <= 18; ++x) field.SetPassability(x, 10, 2);
 
-    // Узкий проход в центре
     field.SetPassability(10, 6, 2);
     field.SetPassability(10, 5, 2);
 
-    // ---------- Очень дорогие (&, passability = 3) ----------
-    // Болото в левом-верхнем углу
     for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 1, 3);
     for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 2, 3);
 
-    // Болото в правом-нижнем углу
     for (int x = 15; x <= 18; ++x) field.SetPassability(x, 3, 3);
     for (int x = 15; x <= 18; ++x) field.SetPassability(x, 4, 3);
 
-    // Пара одиночных «грязных» клеток около центра
     field.SetPassability(11, 10, 3);
     field.SetPassability(12, 10, 3);
     field.SetPassability(11, 11, 3);
@@ -88,4 +80,8 @@ void Field::SetPassability(int x, int y, int value) {
     if (IsValidPosition(x, y)) {
         grid_[y][x].SetPassability(value);
     }
+}
+
+const Cell& Field::GetCell(int x, int y) const {
+    return grid_[y][x];
 }

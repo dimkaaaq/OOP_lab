@@ -5,8 +5,18 @@
 EntityController::EntityController(Field& field, Robot& player,
                                    std::vector<Robot*>& enemies,
                                    InputController& input)
-    : field_(field), player_(player), enemies_(enemies), input_(input),
-      rng_(std::random_device{}()) {}
+    : field_(field), player_(player), enemies_(enemies), input_(input), vision_(field.GetWidth(), field.GetHeight()),
+      rng_(std::random_device{}())
+{
+    UpdateVision();
+}
+
+void EntityController::UpdateVision() {
+    if (player_.IsAlive()) {
+        vision_.Update(field_, player_.GetX(), player_.GetY(),
+                       player_.GetVision());
+    }
+}
 
 int EntityController::PlayerTurn() {
     Commands dir = input_.GetCommand();

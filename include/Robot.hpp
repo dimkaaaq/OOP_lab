@@ -34,6 +34,9 @@ public:
     void Interact(Robot& target, int heal_value);
     void MoveTo(int x, int y);
 
+    int  GetVision() const { return vision_; }
+    void IncreaseVision(int v) { if (v > 0) vision_ += v; }
+
 private:
     void TryRankUp();
 
@@ -49,6 +52,7 @@ private:
     int required_exp_;
     int rank_;
     int speed_ = 1;
+    int vision_ = 5;    
 };
 
 #endif
