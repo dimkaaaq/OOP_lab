@@ -16,7 +16,6 @@ void GameLoop::Start() {
                      entity_controller_.GetVision());
 
     while (!entity_controller_.IsGameOver()) {
-        // Ход игрока. Если ход не состоялся — просто перерисовать и ждать снова.
         if (entity_controller_.PlayerTurn() == 0) {
             renderer_.ClearScreen();
             renderer_.Render(field_, player_, enemies_,
@@ -24,13 +23,11 @@ void GameLoop::Start() {
             continue;
         }
 
-        // Ход врагов, восстановление, обзор
         entity_controller_.EnemyTurn();
         entity_controller_.RestoreEnergy();
         ++turn_;
         entity_controller_.UpdateVision();
 
-        // Один рендер в конце итерации
         renderer_.ClearScreen();
         renderer_.Render(field_, player_, enemies_,
                          entity_controller_.GetVision());
