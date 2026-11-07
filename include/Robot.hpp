@@ -4,7 +4,7 @@
 class Robot {
 public:
     Robot(int team, int max_health, int damage, int max_energy,
-          int required_exp, int x = 0, int y = 0, int speed = 1);
+          int required_exp, int speed = 1);
 
     int GetTeam() const { return team_; }
     int GetDamage() const { return damage_; }
@@ -16,8 +16,6 @@ public:
     int GetMaxHealth() const { return max_health_; }
     int GetRank() const { return rank_; }
     int GetSpeed() const { return speed_; }
-    int GetX() const { return x_; }
-    int GetY() const { return y_; }
 
     bool IsAlive() const { return current_health_ > 0; }
 
@@ -32,17 +30,14 @@ public:
     void IncreaseSpeed(int value);
 
     void Interact(Robot& target, int heal_value);
-    void MoveTo(int x, int y);
 
-    int  GetVision() const { return vision_; }
+    int GetVision() const { return vision_; }
     void IncreaseVision(int v) { if (v > 0) vision_ += v; }
 
 private:
     void TryRankUp();
 
     int team_;
-    int x_;
-    int y_;
     int max_health_;
     int current_health_;
     int damage_;
@@ -52,7 +47,7 @@ private:
     int required_exp_;
     int rank_;
     int speed_ = 1;
-    int vision_ = 5;    
+    int vision_ = 5;
 };
 
 #endif

@@ -4,7 +4,7 @@ Vision::Vision(int width, int height)
  : width_(width), height_(height), visible_(height, std::vector<bool>(width, false)),
     explored_(height, std::vector<bool>(width, false)){}
 
-void Vision::Update(const Field& field, int px, int py, int radius) {
+void Vision::Update(int px, int py, int radius) {
     for (int y = 0; y < height_; ++y){
         for (int x = 0; x < width_; ++x){
             visible_[y][x] = false;
@@ -17,7 +17,10 @@ void Vision::Update(const Field& field, int px, int py, int radius) {
             if (dx * dx + dy * dy > r2) continue;
             int x = px + dx;
             int y = py + dy;
-            if (!field.IsValidPosition(x, y)) continue;
+            
+            // Проверка границ теперь своя, без Field
+            if (x < 0 || y < 0 || x >= width_ || y >= height_) continue;
+            
             visible_[y][x] = true;
             explored_[y][x] = true;
         }

@@ -2,12 +2,13 @@
 #define VISION_HPP
 
 #include <vector>
-#include "Field.hpp"
 
 class Vision {
 public:
     Vision(int width, int height);
-    void Update(const Field& field, int px, int py, int radius);
+    
+    // Убрали const Field& field, теперь только координаты и радиус
+    void Update(int px, int py, int radius);
 
     bool IsVisible(int x, int y) const;
     bool IsExplored(int x, int y) const;

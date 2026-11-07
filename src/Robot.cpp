@@ -1,12 +1,9 @@
 #include "Robot.hpp"
-
 #include <stdexcept>
 
 Robot::Robot(int team, int max_health, int damage, int max_energy,
-             int required_exp, int x, int y, int speed)
+             int required_exp, int speed)
     : team_(team),
-      x_(x),
-      y_(y),
       max_health_(max_health),
       current_health_(max_health),
       damage_(damage),
@@ -15,7 +12,14 @@ Robot::Robot(int team, int max_health, int damage, int max_energy,
       current_exp_(0),
       required_exp_(required_exp),
       rank_(1),
-      speed_(speed) {}
+      speed_(speed) 
+{
+    if (max_health <= 0) throw std::invalid_argument("Max health must be positive");
+    if (damage < 0) throw std::invalid_argument("Damage cannot be negative");
+    if (max_energy < 0) throw std::invalid_argument("Max energy cannot be negative");
+    if (required_exp <= 0) throw std::invalid_argument("Required exp must be positive");
+    if (speed <= 0) throw std::invalid_argument("Speed must be at least 1");
+}
 
 void Robot::TakeDamage(int value) {
     current_health_ -= value;
@@ -46,27 +50,35 @@ void Robot::SpendEnergy(int value) {
 }
 
 void Robot::GainExp(int value) {
-    current_exp_ += value;
-    TryRankUp();
+    if (value > 0) {
+        current_exp_ += value;
+        TryRankUp();
+    }
 }
 
 void Robot::IncreaseMaxHealth(int new_max_health) {
-    max_health_ = new_max_health;
-    if (new_max_health < current_health_) {
-        current_health_ = new_max_health;
+    if (new_max_health > max_health_) {
+        max_health_ = new_max_health;
+        if (current_health_ > max_health_) {
+            current_health_ = max_health_;
+        }
     }
 }
 
 void Robot::IncreaseDamage(int value) {
-    damage_ += value;
+    if (value > 0) {
+        damage_ += value;
+    }
 }
 
 void Robot::IncreaseSpeed(int value) {
-    speed_ += value;
+    if (value > 0) {
+        speed_ += value;
+    }
 }
 
 void Robot::Interact(Robot& target, int heal_value) {
-    if (&target == this) {
+    if (&target == this || !target.IsAlive()) {
         return;
     }
     if (target.GetTeam() == team_) {
@@ -76,20 +88,12 @@ void Robot::Interact(Robot& target, int heal_value) {
     }
 }
 
-void Robot::MoveTo(int x, int y) {
-    if (x < 0 || y < 0) {
-        return;
-    }
-    x_ = x;
-    y_ = y;
-}
-
 void Robot::TryRankUp() {
     while (current_exp_ >= required_exp_) {
         current_exp_ -= required_exp_;
         required_exp_ = required_exp_ * 13 / 10;
         ++rank_;
-        max_health_ += 20;
-        damage_ += 5;
+        IncreaseMaxHealth(max_health_ + 20);
+        IncreaseDamage(5);
     }
 }

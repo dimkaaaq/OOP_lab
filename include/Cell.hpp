@@ -7,7 +7,11 @@ public:
     bool IsPassable() const { return passable_; } 
     int GetPassability() const { return passability_; }
     void SetPassable(bool value) { passable_ = value; }
-    void SetPassability(int value) { passability_ = value; }
+    void SetPassability(int value) { 
+        if (value >= 1) {
+            passability_ = value; 
+        }
+    }
 private:
     bool passable_;
     int passability_ = 1;

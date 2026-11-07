@@ -1,6 +1,4 @@
 #include "Field.hpp"
-#include "Robot.hpp"
-#include "Cell.hpp"
 
 Field::Field(int width, int height){
     if (width > kMaxSize) width_ = kMaxSize;

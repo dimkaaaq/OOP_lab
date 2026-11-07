@@ -2,19 +2,22 @@
 
 #include <random>
 
-EntityController::EntityController(Field& field, Robot& player,
-                                   std::vector<Robot*>& enemies,
-                                   InputController& input)
-    : field_(field), player_(player), enemies_(enemies), input_(input), vision_(field.GetWidth(), field.GetHeight()),
+#include "Field.hpp"
+#include "Robot.hpp"
+#include "World.hpp"
+
+EntityController::EntityController(World& world, InputController& input)
+    : world_(world), input_(input),
+      vision_(world.GetField().GetWidth(), world.GetField().GetHeight()),
       rng_(std::random_device{}())
 {
     UpdateVision();
 }
 
 void EntityController::UpdateVision() {
-    if (player_.IsAlive()) {
-        vision_.Update(field_, player_.GetX(), player_.GetY(),
-                       player_.GetVision());
+    Robot& player = world_.GetPlayer();
+    if (player.IsAlive()) {
+        vision_.Update(world_.GetX(&player), world_.GetY(&player), player.GetVision());
     }
 }
 
@@ -23,14 +26,11 @@ int EntityController::PlayerTurn() {
     if (dir == Commands::Invalid) {
         return 0;
     }
-    if (TryMove(player_, dir) == 1) {
-        return 1;
-    }
-    return 0;
+    return TryMove(world_.GetPlayer(), dir);
 }
 
 void EntityController::EnemyTurn() {
-    for (Robot* enemy : enemies_) {
+    for (Robot* enemy : world_.GetEnemies()) {
         if (enemy->IsAlive()) {
             Commands dir = GetRandomDirection();
             TryMove(*enemy, dir);
@@ -39,10 +39,11 @@ void EntityController::EnemyTurn() {
 }
 
 void EntityController::RestoreEnergy() {
-    if (player_.IsAlive()) {
-        player_.RestoreEnergy(kEnergyRestoreAmount);
+    Robot& player = world_.GetPlayer();
+    if (player.IsAlive()) {
+        player.RestoreEnergy(kEnergyRestoreAmount);
     }
-    for (Robot* enemy : enemies_) {
+    for (Robot* enemy : world_.GetEnemies()) {
         if (enemy->IsAlive()) {
             enemy->RestoreEnergy(kEnergyRestoreAmount);
         }
@@ -50,7 +51,7 @@ void EntityController::RestoreEnergy() {
 }
 
 bool EntityController::IsPlayerWin() const {
-    for (Robot* enemy : enemies_) {
+    for (Robot* enemy : world_.GetEnemies()) {
         if (enemy->IsAlive()) {
             return false;
         }
@@ -59,7 +60,7 @@ bool EntityController::IsPlayerWin() const {
 }
 
 bool EntityController::IsGameOver() const {
-    return !player_.IsAlive() || IsPlayerWin();
+    return !world_.GetPlayer().IsAlive() || IsPlayerWin();
 }
 
 Commands EntityController::GetRandomDirection() {
@@ -75,55 +76,74 @@ Commands EntityController::GetRandomDirection() {
     return Commands::Invalid;
 }
 
+bool EntityController::GetDelta(Commands dir, int& dx, int& dy) {
+    dx = 0;
+    dy = 0;
+    switch (dir) {
+        case Commands::Up:      dy = 1;  return true;
+        case Commands::Down:    dy = -1; return true;
+        case Commands::Left:    dx = -1; return true;
+        case Commands::Right:   dx = 1;  return true;
+        case Commands::Invalid: return false;
+    }
+    return false;
+}
+
+bool EntityController::CanStep(const Field& field, int x, int y, int steps_left, int& cost) const {
+    if (!field.IsValidPosition(x, y)) return false;
+    if (!field.CanMoveTo(x, y)) return false;
+    
+    cost = field.GetCellPassability(x, y);
+    if (cost > steps_left) return false;
+    
+    return true;
+}
+
+EntityController::StepResult EntityController::ApplyStep(Robot& robot, int x, int y, int cost, int& steps_left) {
+    Robot* target = world_.GetRobotAt(x, y);
+    if (target != nullptr && target != &robot) {
+        robot.Interact(*target, kHealAmount);
+        return StepResult::Interacted;
+    }
+
+    world_.MoveRobot(&robot, x, y);
+    steps_left -= cost;
+    return StepResult::Moved;
+}
+
 int EntityController::TryMove(Robot& robot, Commands dir) {
-    if (dir == Commands::Invalid) return 0;
+    int dx = 0;
+    int dy = 0;
+    if (!GetDelta(dir, dx, dy)) return 0;
 
-    int start_x = robot.GetX();
-    int start_y = robot.GetY();
-    int current_x = robot.GetX();
-    int current_y = robot.GetY();
-
+    int start_x = world_.GetX(&robot);
+    int start_y = world_.GetY(&robot);
+    int current_x = start_x;
+    int current_y = start_y;
     int steps_left = robot.GetSpeed();
+
+    const Field& field = world_.GetField();
+
     while (steps_left > 0) {
-        int next_x = current_x;
-        int next_y = current_y;
-        switch (dir) {
-            case Commands::Up:    ++next_y; break;
-            case Commands::Down:  --next_y; break;
-            case Commands::Left:  --next_x; break;
-            case Commands::Right: ++next_x; break;
-            case Commands::Invalid: return 0;
+        int next_x = current_x + dx;
+        int next_y = current_y + dy;
+
+        int cost = 0;
+        if (!CanStep(field, next_x, next_y, steps_left, cost)) {
+            break;
         }
-        if (!field_.IsValidPosition(next_x, next_y)) break;
-        if (!field_.CanMoveTo(next_x, next_y)) break;
 
-        int cost = field_.GetCellPassability(next_x, next_y);
-        if (cost > steps_left) break;
-
-        if (&robot != &player_ && player_.IsAlive()
-            && player_.GetX() == next_x && player_.GetY() == next_y) {
-            robot.Interact(player_, kHealAmount);
+        StepResult result = ApplyStep(robot, next_x, next_y, cost, steps_left);
+        
+        if (result == StepResult::Interacted) {
             return 1;
         }
-
-        for (Robot* enemy : enemies_) {
-            if (enemy == &robot) continue;
-            if (!enemy->IsAlive()) continue;
-            if (enemy->GetX() != next_x || enemy->GetY() != next_y) continue;
-
-            robot.Interact(*enemy, kHealAmount);
-            return 1;
-        }
-
-        robot.MoveTo(next_x, next_y);
 
         current_x = next_x;
         current_y = next_y;
-
-        steps_left -= cost;
     }
-    
-    if (robot.GetX() != start_x || robot.GetY() != start_y) {
+
+    if (world_.GetX(&robot) != start_x || world_.GetY(&robot) != start_y) {
         return 1;
     }
     return 0;
