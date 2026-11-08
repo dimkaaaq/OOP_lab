@@ -5,6 +5,7 @@
 #include "Field.hpp"
 #include "Robot.hpp"
 #include "World.hpp"
+#include "iostream"
 
 EntityController::EntityController(World& world, InputController& input)
     : world_(world), input_(input),
@@ -22,11 +23,33 @@ void EntityController::UpdateVision() {
 }
 
 int EntityController::PlayerTurn() {
-    Commands dir = input_.GetCommand();
-    if (dir == Commands::Invalid) {
+    Commands cmd = input_.GetCommand();
+    if (cmd == Commands::Invalid) {
         return 0;
     }
-    return TryMove(world_.GetPlayer(), dir);
+    if (cmd == Commands::Ability1) {
+        bool used = world_.GetPlayer().UseAbility(0);
+        return used ? 1 : 0;
+    }
+    if (cmd == Commands::Ability2) {
+        bool used = world_.GetPlayer().UseAbility(1);
+        return used ? 1 : 0;
+    }
+    if (cmd == Commands::Ability3 || cmd == Commands::Ability4) {
+        int tx, ty;
+        if (cmd == Commands::Ability4) {
+            std::cout << "Введите координаты точки телепортации\n";
+            std::cin >> tx >> ty;
+            bool used = world_.GetPlayer().UseAbility(3, tx, ty);
+            return used ? 1 : 0;
+        }
+        std::cout << "Введите координаты цели\n";
+        std::cin >> tx >> ty;
+        bool used = world_.GetPlayer().UseAbility(2, tx, ty);
+        return used ? 1 : 0;
+    }
+
+    return TryMove(world_.GetPlayer(), cmd);
 }
 
 void EntityController::EnemyTurn() {
@@ -84,6 +107,11 @@ bool EntityController::GetDelta(Commands dir, int& dx, int& dy) {
         case Commands::Down:    dy = -1; return true;
         case Commands::Left:    dx = -1; return true;
         case Commands::Right:   dx = 1;  return true;
+
+        case Commands::Ability1: return false; 
+        case Commands::Ability2: return false;
+        case Commands::Ability3: return false;
+        case Commands::Ability4: return false;
         case Commands::Invalid: return false;
     }
     return false;

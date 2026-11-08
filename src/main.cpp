@@ -8,6 +8,13 @@
 #include "Robot.hpp"
 #include "World.hpp"
 
+#include "abilities/HealAbility.hpp"
+#include "abilities/MeleeAbility.hpp"
+#include "abilities/RangeAbility.hpp"
+#include "abilities/TeleportAbility.hpp"
+
+#include <random>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -35,6 +42,23 @@ int main() {
     world.AddPlayer(player, 0, 0);
     world.AddEnemy(enemy1, 10, 12);
     world.AddEnemy(enemy2, 19, 13);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 1);
+
+    for (Robot* enemy : world.GetEnemies()) {
+        if (dist(gen) == 0) {
+            enemy->AddAbility(std::make_shared<HealAbility>());
+        } else {
+            enemy->AddAbility(std::make_shared<TeleportAbility>(world));
+        }
+    }
+
+    player.AddAbility(std::make_shared<HealAbility>());
+    player.AddAbility(std::make_shared<MeleeAbility>(world));
+    player.AddAbility(std::make_shared<RangeAbility>(world));
+    player.AddAbility(std::make_shared<TeleportAbility>(world));
 
     Renderer renderer;
     InputController input;

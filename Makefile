@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Iinclude
-SRCS = $(wildcard src/*.cpp)
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Iinclude -Iinclude/abilities
+SRCS = $(wildcard src/*.cpp) $(wildcard src/abilities/*.cpp)
 TARGET = build/game
 
 all: $(TARGET)

@@ -1,6 +1,10 @@
 #ifndef ROBOT_HPP
 #define ROBOT_HPP
 
+#include <vector>
+#include <memory>
+#include "abilities/IAbility.hpp"
+
 class Robot {
 public:
     Robot(int team, int max_health, int damage, int max_energy,
@@ -34,6 +38,11 @@ public:
     int GetVision() const { return vision_; }
     void IncreaseVision(int v) { if (v > 0) vision_ += v; }
 
+    void AddAbility(std::shared_ptr<IAbility> ability);
+    bool UseAbility(int index, int target_x = -1, int target_y = -1);
+    int GetAbilityCount() const { return abilities_.size(); }
+    std::string GetAbilityName(int index) const;
+
 private:
     void TryRankUp();
 
@@ -48,6 +57,8 @@ private:
     int rank_;
     int speed_ = 1;
     int vision_ = 5;
+
+    std::vector<std::shared_ptr<IAbility>> abilities_;
 };
 
 #endif

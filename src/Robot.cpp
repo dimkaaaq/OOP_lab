@@ -97,3 +97,24 @@ void Robot::TryRankUp() {
         IncreaseDamage(5);
     }
 }
+
+void Robot::AddAbility(std::shared_ptr<IAbility> ability) {
+    if (ability) {
+        abilities_.push_back(ability);
+    }
+}
+
+bool Robot::UseAbility(int index, int target_x, int target_y) {
+    if (index >= 0 && index < static_cast<int>(abilities_.size())) {
+        return abilities_[index]->Use(*this, target_x, target_y);        
+    }
+    return false;
+}
+
+std::string Robot::GetAbilityName(int index) const {
+    if (index >= 0 && index < static_cast<int>(abilities_.size())) {
+        return abilities_[index]->GetName();
+    }
+    return "None";
+}
+

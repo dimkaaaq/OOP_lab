@@ -6,6 +6,10 @@ enum class Commands {
     Down, 
     Left, 
     Right,
+    Ability1,
+    Ability2,
+    Ability3,
+    Ability4,
     Invalid
 };
 

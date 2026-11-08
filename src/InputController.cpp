@@ -14,6 +14,10 @@ Commands InputController::GetCommand() {
         case 's': case 'S': return Commands::Down;
         case 'a': case 'A': return Commands::Left;
         case 'd': case 'D': return Commands::Right;
+        case '1': return Commands::Ability1;
+        case '2': return Commands::Ability2;
+        case '3': return Commands::Ability3;
+        case '4': return Commands::Ability4;
         default: return Commands::Invalid;
     }
 }

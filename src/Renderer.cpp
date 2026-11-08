@@ -67,7 +67,8 @@ void Renderer::Render(const World& world, const Vision& vision) {
     std::cout << '\n' << "Health " << player.GetHealth() << " HP" << '\n';
     std::cout << '\n' << "Damage " << player.GetDamage() << " DMG" << '\n';
     std::cout << '\n' << "Rank " << player.GetRank() << " LVL" << '\n';
-    std::cout << '\n' << "Experience " << player.GetExp() << " / " << player.GetRequiredExp() << " EXP" << '\n' << '\n';
+    std::cout << '\n' << "Experience " << player.GetExp() << " / " << player.GetRequiredExp() << " EXP" << '\n';
+    std::cout << '\n' << "Energy Left " << player.GetEnergy() << " / " << player.GetMaxEnergy() << '\n';
 }
 
 void Renderer::RenderResult(bool player_won) {
@@ -79,5 +80,5 @@ void Renderer::RenderResult(bool player_won) {
 }
 
 void Renderer::ClearScreen() {
-    std::cout << "\033[H";
+    std::cout << "\033[2J\033[H";
 }

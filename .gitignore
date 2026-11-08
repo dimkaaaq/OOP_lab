@@ -1,0 +1,15 @@
+build/
+*.o
+*.obj
+*.exe
+*.out
+game
+game.exe
+
+.vscode/
+
+Thumbs.db
+.DS_Store
+
+*.log
+*.tmp
