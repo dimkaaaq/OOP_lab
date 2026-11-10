@@ -9,6 +9,11 @@ public:
     
     int GetEnergyCost() const override;
     std::string GetName() const override;
+    void Upgrade() override { heal_amount_ += 10; }
+    int GetLevel() const override { return level_; }
+private:
+    int level_ = 1;
+    int heal_amount_ = 20;
 };
 
 #endif

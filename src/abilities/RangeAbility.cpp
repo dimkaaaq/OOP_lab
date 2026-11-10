@@ -23,7 +23,7 @@ bool RangeAbility::Use(Robot& caster, int target_x, int target_y) {
 
     if (target == nullptr || target->GetTeam() == caster.GetTeam()) return true;
 
-    target->TakeDamage(caster.GetDamage());
+    target->TakeDamage(world_.GetPlayer().GetDamage() + damage_);
 
     return true;
 }

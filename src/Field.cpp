@@ -1,4 +1,9 @@
 #include "Field.hpp"
+#include <random>
+#include "statuses/BurnStatus.hpp"
+#include "statuses/SlowStatus.hpp"
+#include "statuses/ShieldStatus.hpp"
+#include "statuses/OverloadStatus.hpp"
 
 Field::Field(int width, int height){
     if (width > kMaxSize) width_ = kMaxSize;
@@ -64,6 +69,33 @@ Field Field::GenerateField() {
     field.SetPassability(12, 10, 3);
     field.SetPassability(11, 11, 3);
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> chance(0, 99);
+    std::uniform_int_distribution<> type_dist(0, 3);
+
+    for (int  y = 0; y < field.GetHeight(); ++y) {
+        for (int  x = 0; x < field.GetWidth(); ++x) {
+            if (!field.CanMoveTo(x, y) || (x == 0 && y == 0)) continue;
+            
+            int roll = chance(gen);
+            int num_statuses;
+
+            if (roll < 10) num_statuses = 1;
+            else if (roll < 12) num_statuses = 2;
+            for (int i = 0; i < num_statuses; ++i) {
+                int type = chance(gen);
+                std::shared_ptr<IStatus> status;
+
+                if (type == 0) status = std::make_shared<BurnStatus>(3, 5);
+                else if (type == 1) status = std::make_shared<SlowStatus>(2);
+                else if (type == 2) status = std::make_shared<ShieldStatus>(10);
+                else status = std::make_shared<OverloadStatus>();
+
+                field.GetCellRef(x, y).AddStatus(status);
+            }
+        }
+    }
     return field;
 }
 
@@ -81,5 +113,9 @@ void Field::SetPassability(int x, int y, int value) {
 }
 
 const Cell& Field::GetCell(int x, int y) const {
+    return grid_[y][x];
+}
+
+Cell& Field::GetCellRef(int x, int y) {
     return grid_[y][x];
 }

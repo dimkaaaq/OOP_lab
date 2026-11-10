@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "abilities/IAbility.hpp"
+#include "statuses/IStatus.hpp"
 
 class Robot {
 public:
@@ -43,6 +44,17 @@ public:
     int GetAbilityCount() const { return abilities_.size(); }
     std::string GetAbilityName(int index) const;
 
+    void AddStatus(std::shared_ptr<IStatus> status);
+    void RemoveStatus(const std::string& name);
+    void ProcessStatusesStart();
+    void ProcessStatusesEnd();
+    bool HasStatus(const std::string& name) const;
+    int GetShieldAmount() const;
+    void TakeShieldDamage(int& damage);
+
+    int GetPendingRankUps() const { return pending_rank_ups_; }
+    void DecreasePendingRankUps() { if (pending_rank_ups_ > 0) pending_rank_ups_--; }
+    void UpgradeAbility(int index);
 private:
     void TryRankUp();
 
@@ -58,7 +70,10 @@ private:
     int speed_ = 1;
     int vision_ = 5;
 
+    int pending_rank_ups_ = 0;
+
     std::vector<std::shared_ptr<IAbility>> abilities_;
+    std::vector<std::shared_ptr<IStatus>> statuses_;
 };
 
 #endif

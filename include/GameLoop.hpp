@@ -10,7 +10,6 @@ class InputController;
 class GameLoop {
 public:
     GameLoop(World& world, Renderer& renderer, InputController& input);
-
     void Start();
 
 private:
@@ -18,7 +17,7 @@ private:
     Renderer& renderer_;
     InputController& input_;
     EntityController entity_controller_;
-
+    void HandleRankUp();
     int turn_ = 0;
 };
 

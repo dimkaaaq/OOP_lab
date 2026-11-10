@@ -22,7 +22,7 @@ bool TeleportAbility::Use(Robot& caster, int target_x, int target_y) {
     if (!field.CanMoveTo(dx, dy)) return false;
     if (world_.GetRobotAt(dx, dy) != nullptr) return false;
 
-    caster.SpendEnergy(GetEnergyCost());
+    caster.SpendEnergy(GetEnergyCost() - energy_consumption_reduction_);
     world_.MoveRobot(&caster, dx, dy);
     return true;
 }

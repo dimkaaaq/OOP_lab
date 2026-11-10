@@ -13,6 +13,11 @@
 #include "abilities/RangeAbility.hpp"
 #include "abilities/TeleportAbility.hpp"
 
+#include "statuses/BurnStatus.hpp"
+#include "statuses/ShieldStatus.hpp"
+#include "statuses/SlowStatus.hpp"
+#include "statuses/OverloadStatus.hpp"
+
 #include <random>
 
 #ifdef _WIN32
@@ -54,11 +59,6 @@ int main() {
             enemy->AddAbility(std::make_shared<TeleportAbility>(world));
         }
     }
-
-    player.AddAbility(std::make_shared<HealAbility>());
-    player.AddAbility(std::make_shared<MeleeAbility>(world));
-    player.AddAbility(std::make_shared<RangeAbility>(world));
-    player.AddAbility(std::make_shared<TeleportAbility>(world));
 
     Renderer renderer;
     InputController input;

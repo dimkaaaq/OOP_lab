@@ -7,7 +7,7 @@ bool HealAbility::Use(Robot& caster, int, int) {
     }
 
     caster.SpendEnergy(GetEnergyCost());
-    caster.TakeHeal(20);
+    caster.TakeHeal(heal_amount_);
     return true;
     
 }

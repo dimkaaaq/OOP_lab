@@ -1,5 +1,7 @@
 #include "Robot.hpp"
 #include <stdexcept>
+#include <algorithm>
+#include <iostream>
 
 Robot::Robot(int team, int max_health, int damage, int max_energy,
              int required_exp, int speed)
@@ -22,7 +24,13 @@ Robot::Robot(int team, int max_health, int damage, int max_energy,
 }
 
 void Robot::TakeDamage(int value) {
-    current_health_ -= value;
+    int remaining_damage = value;
+    
+    for (auto& status: statuses_) {
+        remaining_damage = status->AbsorbDamage(remaining_damage);
+        if (remaining_damage <= 0) break;
+    }
+    current_health_ -= remaining_damage;
     if (current_health_ < 0) {
         current_health_ = 0;
     }
@@ -85,6 +93,9 @@ void Robot::Interact(Robot& target, int heal_value) {
         target.TakeHeal(heal_value);
     } else {
         target.TakeDamage(damage_);
+        if (!target.IsAlive()) {
+            GainExp(100);
+        }
     }
 }
 
@@ -93,6 +104,7 @@ void Robot::TryRankUp() {
         current_exp_ -= required_exp_;
         required_exp_ = required_exp_ * 13 / 10;
         ++rank_;
+        ++pending_rank_ups_;
         IncreaseMaxHealth(max_health_ + 20);
         IncreaseDamage(5);
     }
@@ -105,8 +117,13 @@ void Robot::AddAbility(std::shared_ptr<IAbility> ability) {
 }
 
 bool Robot::UseAbility(int index, int target_x, int target_y) {
+    if (this->HasStatus("Overload")) {
+        this->RemoveStatus("Overload");
+        std::cout << "Перегрузка! Способность заблокирована.\n";
+        return false;
+    }
     if (index >= 0 && index < static_cast<int>(abilities_.size())) {
-        return abilities_[index]->Use(*this, target_x, target_y);        
+    return abilities_[index]->Use(*this, target_x, target_y);        
     }
     return false;
 }
@@ -118,3 +135,64 @@ std::string Robot::GetAbilityName(int index) const {
     return "None";
 }
 
+void Robot::AddStatus(std::shared_ptr<IStatus> status) {
+    if (!status) return;
+    std::string name = status->GetName();
+
+    for (auto& existing : statuses_) {
+        if (existing->GetName() == name) {
+            if (name == "Shield") {
+                statuses_.push_back(status);
+                return;
+            } else if (name == "Overload") {
+                return;
+            } else if (name == "Burn" || name == "Slow") {
+                statuses_.push_back(status);
+                return;
+            }
+        }
+    }
+    status->Apply(*this);
+    statuses_.push_back(status);
+}
+
+void Robot::RemoveStatus(const std::string& name) {
+    statuses_.erase(
+        std::remove_if(statuses_.begin(), statuses_.end(),
+            [&name](const std::shared_ptr<IStatus>& s) { return s->GetName() == name; }),
+        statuses_.end()
+    );
+}
+
+void Robot::ProcessStatusesStart() {
+    for (auto& status : statuses_) {
+        status->OnTurnStart(*this);
+    }
+}
+
+void Robot::ProcessStatusesEnd() {
+    for (auto& status : statuses_) {
+        status->OnTurnEnd(*this);
+    }
+
+    statuses_.erase(
+        std::remove_if(statuses_.begin(), statuses_.end(),
+            [](const std::shared_ptr<IStatus>& s) { 
+                return s->IsExpired(); 
+            }),
+        statuses_.end()
+    );
+}
+
+bool Robot::HasStatus(const std::string& name) const {
+    for (const auto& status : statuses_) {
+        if (status->GetName() == name) return true;
+    }
+    return false;
+}
+
+void Robot::UpgradeAbility(int idx) {
+    if (idx >= 0 && idx < static_cast<int>(abilities_.size())) {
+        abilities_[idx]->Upgrade();
+    }
+}

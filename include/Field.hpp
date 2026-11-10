@@ -19,7 +19,7 @@ public:
     int GetCellPassability(int x, int y) const;  
     void SetPassability(int x, int y, int value);
     static Field GenerateField();
-
+    Cell& GetCellRef(int x, int y);
 private:
     static const int kMinSize = 3;
     static const int kMaxSize = 100;

@@ -1,11 +1,12 @@
 #include "EntityController.hpp"
 
 #include <random>
+#include "iostream"
 
 #include "Field.hpp"
 #include "Robot.hpp"
 #include "World.hpp"
-#include "iostream"
+#include "Cell.hpp"
 
 EntityController::EntityController(World& world, InputController& input)
     : world_(world), input_(input),
@@ -23,41 +24,69 @@ void EntityController::UpdateVision() {
 }
 
 int EntityController::PlayerTurn() {
+    Robot& player = world_.GetPlayer();
+
+    player.ProcessStatusesStart(); 
+
     Commands cmd = input_.GetCommand();
-    if (cmd == Commands::Invalid) {
-        return 0;
-    }
+    int result = 0;
+
     if (cmd == Commands::Ability1) {
-        bool used = world_.GetPlayer().UseAbility(0);
-        return used ? 1 : 0;
+        player.UseAbility(0);
     }
-    if (cmd == Commands::Ability2) {
-        bool used = world_.GetPlayer().UseAbility(1);
-        return used ? 1 : 0;
+    else if (cmd == Commands::Ability2) {
+        player.UseAbility(1);
     }
-    if (cmd == Commands::Ability3 || cmd == Commands::Ability4) {
+    else if (cmd == Commands::Ability3 || cmd == Commands::Ability4) {
         int tx, ty;
         if (cmd == Commands::Ability4) {
-            std::cout << "Введите координаты точки телепортации\n";
+            std::cout << "Введите смещение для телепорта (X Y): ";
             std::cin >> tx >> ty;
-            bool used = world_.GetPlayer().UseAbility(3, tx, ty);
-            return used ? 1 : 0;
+            player.UseAbility(3, tx, ty);
+        } else {
+            std::cout << "Введите смещение для выстрела (X Y): ";
+            std::cin >> tx >> ty;
+            player.UseAbility(2, tx, ty);
         }
-        std::cout << "Введите координаты цели\n";
-        std::cin >> tx >> ty;
-        bool used = world_.GetPlayer().UseAbility(2, tx, ty);
-        return used ? 1 : 0;
+    }
+    else if (cmd != Commands::Invalid) {
+        result = TryMove(player, cmd);
     }
 
-    return TryMove(world_.GetPlayer(), cmd);
+    player.ProcessStatusesEnd();
+
+    return result;
 }
 
 void EntityController::EnemyTurn() {
+    std::uniform_int_distribution<> chance_dist(0, 9);
+
     for (Robot* enemy : world_.GetEnemies()) {
-        if (enemy->IsAlive()) {
-            Commands dir = GetRandomDirection();
-            TryMove(*enemy, dir);
+        if (!enemy->IsAlive()) continue;
+        
+        if (chance_dist(rng_) <= 2 && enemy->GetAbilityCount() > 0) {
+            std::string ability_name = enemy->GetAbilityName(0);
+            bool used = false;
+            
+            if (ability_name == "Heal") {
+                if (enemy->GetHealth() < enemy->GetMaxHealth()) {
+                    used = enemy->UseAbility(0);
+                }
+            }
+            else if (ability_name == "Teleportation") {
+                std::uniform_int_distribution<> offset_dist(-3, 3);
+
+                int dx = offset_dist(rng_);
+                int dy = offset_dist(rng_);
+
+                used = enemy->UseAbility(0, dx, dy);
+            }
+            if (used) { 
+                continue;
+            }
         }
+        Commands dir = GetRandomDirection();
+        TryMove(*enemy, dir);
     }
 }
 
@@ -136,10 +165,23 @@ EntityController::StepResult EntityController::ApplyStep(Robot& robot, int x, in
 
     world_.MoveRobot(&robot, x, y);
     steps_left -= cost;
+
+    Cell& cell = world_.GetField().GetCellRef(x, y);
+    auto cell_statuses = cell.GetStatuses();
+    if (!cell_statuses.empty()) {
+        std::cout << "\n[!] ВЫ НАСТУПИЛИ НА ЛОВУШКУ!\n";
+        for (const auto& status : cell_statuses) {
+            robot.AddStatus(status->Clone());
+    }
+    cell.RemoveRandomStatus();
+}
+    
     return StepResult::Moved;
 }
 
 int EntityController::TryMove(Robot& robot, Commands dir) {
+    if (robot.HasStatus("Slow")) return 0;
+
     int dx = 0;
     int dy = 0;
     if (!GetDelta(dir, dx, dy)) return 0;
