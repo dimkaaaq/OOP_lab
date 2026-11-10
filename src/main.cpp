@@ -42,11 +42,13 @@ int main() {
     Robot player(1, 40, 10, 100, 100, 2);
     Robot enemy1(2, 30, 8, 100, 100, 2);
     Robot enemy2(2, 30, 8, 100, 100, 2);
+    Robot enemy3(2, 30, 8, 100, 100, 2);
 
     World world(field);
     world.AddPlayer(player, 0, 0);
     world.AddEnemy(enemy1, 10, 12);
     world.AddEnemy(enemy2, 19, 13);
+    world.AddEnemy(enemy3, 10, 13);
 
     std::random_device rd;
     std::mt19937 gen(rd());

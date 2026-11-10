@@ -2,6 +2,7 @@
 #include "World.hpp"
 #include "Robot.hpp"
 #include <cmath>
+#include "statuses/BurnStatus.hpp"
 
 RangeAbility::RangeAbility(World& world) : world_(world) {}
 
@@ -17,13 +18,14 @@ bool RangeAbility::Use(Robot& caster, int target_x, int target_y) {
     double dist = std::sqrt(std::pow(dx - cx, 2) + std::pow(dy - cy, 2));
     if (dist > 3.0) return false;
     
-    caster.SpendEnergy(GetEnergyCost());
     
     Robot* target = world_.GetRobotAt(dx, dy);
 
     if (target == nullptr || target->GetTeam() == caster.GetTeam()) return true;
 
-    target->TakeDamage(world_.GetPlayer().GetDamage() + damage_);
+    caster.SpendEnergy(GetEnergyCost());
+    target->TakeDamage(caster.GetDamage() + damage_);
+    target->AddStatus(std::make_shared<BurnStatus>(3, 5));
 
     return true;
 }

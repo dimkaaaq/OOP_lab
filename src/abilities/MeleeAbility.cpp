@@ -21,7 +21,7 @@ bool MeleeAbility::Use(Robot& caster, int, int) {
         int ex = world_.GetX(enemy);
         int ey = world_.GetY(enemy);
 
-        if (std::abs(ex - cx) <= 1 && std::abs(ey - cy) <= 1) { 
+        if (std::abs(ex - cx) <= range_ && std::abs(ey - cy) <= range_) { 
             enemy->TakeDamage(caster.GetDamage());
         }
     }

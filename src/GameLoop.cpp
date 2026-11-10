@@ -21,17 +21,32 @@ GameLoop::GameLoop(World& world, Renderer& renderer, InputController& input)
 void GameLoop::Start() {
     entity_controller_.UpdateVision();
     renderer_.ClearScreen();
-    renderer_.Render(world_, entity_controller_.GetVision());
+    renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
 
     while (!entity_controller_.IsGameOver()) {
-        if (entity_controller_.PlayerTurn() == 0) {
+        int result = entity_controller_.PlayerTurn();
+
+        if (result == -1) {
+            int mode = static_cast<int>(current_view_mode_);
+            mode = (mode + 1) % 4;
+            current_view_mode_ = static_cast<ViewMode>(mode);
+            
             renderer_.ClearScreen();
-            renderer_.Render(world_, entity_controller_.GetVision());
+            renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
             continue;
         }
-        if (world_.GetPlayer().GetPendingRankUps() > 0) {
-            HandleRankUp();
+
+        if (result == 0) {
+            renderer_.ClearScreen();
+            renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
+            continue;
         }
+
+        if (world_.GetPlayer().GetPendingRankUps() > 0) {
+            renderer_.ClearScreen();
+            renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
+            HandleRankUp();
+        }   
 
         entity_controller_.EnemyTurn();
         entity_controller_.RestoreEnergy();
@@ -39,11 +54,11 @@ void GameLoop::Start() {
         entity_controller_.UpdateVision();
 
         renderer_.ClearScreen();
-        renderer_.Render(world_, entity_controller_.GetVision());
+        renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
     }
 
     renderer_.ClearScreen();
-    renderer_.Render(world_, entity_controller_.GetVision());
+    renderer_.Render(world_, entity_controller_.GetVision(), current_view_mode_);
     renderer_.RenderResult(world_.GetPlayer().IsAlive());
 }
 
@@ -55,7 +70,7 @@ void GameLoop::HandleRankUp() {
         std::cout << "0. Получить новую способность\n";
 
         for (int i = 0; i < player.GetAbilityCount(); ++i) {
-            std::cout << i + 1 << ". Улучшить способность: " << player.GetAbilityName(i) << "\n";
+            std::cout << i + 1 << ". Улучшить способность: " << player.GetAbilityName(i) << " (Lvl " << player.GetAbilityLevel(i) << ")\n";
         }
 
         int choice;
@@ -72,27 +87,29 @@ void GameLoop::HandleRankUp() {
                 std::cout << "У вас получены все способности. Выберите улучшение\n";
                 continue;
             }
-
-            std::cout << "Выберите новую: 1 - Лечение, 2 - Ближний удар, 3 - Дальний удар, 4 - Телепортация: ";
             
+            std::cout << "Выберите новую: 1 - Лечение, 2 - Ближний удар, 3 - Дальний удар, 4 - Телепортация: ";
             if (!(std::cin >> choice)) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
                 continue;
             }
-
-            if (choice == 1) {
-                player.AddAbility(std::make_shared<HealAbility>());
-            } else if (choice == 2) {
-                player.AddAbility(std::make_shared<MeleeAbility>(world_));
-            } else if (choice == 3) {
-                player.AddAbility(std::make_shared<RangeAbility>(world_));
-            } else if (choice == 4) {
-                player.AddAbility(std::make_shared<TeleportAbility>(world_));
+            if (choice == 1) player.AddAbility(std::make_shared<HealAbility>());
+            else if (choice == 2) player.AddAbility(std::make_shared<MeleeAbility>(world_));
+            else if (choice == 3) player.AddAbility(std::make_shared<RangeAbility>(world_));
+            else if (choice == 4) player.AddAbility(std::make_shared<TeleportAbility>(world_));
+            else {
+                std::cout << "Неверный выбор!\n";
+                continue;
             }
         } else {
-            player.UpgradeAbility(choice - 1);
-            std::cout << "Способность улучшена!\n";
+            if (choice > 0 && choice <= player.GetAbilityCount()) {
+                player.UpgradeAbility(choice - 1);
+                std::cout << "Способность улучшена!\n";
+            } else {
+                std::cout << "Неверный номер способности!\n";
+                continue;
+            }
         }
 
         player.DecreasePendingRankUps();

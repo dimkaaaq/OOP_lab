@@ -25,28 +25,41 @@ void EntityController::UpdateVision() {
 
 int EntityController::PlayerTurn() {
     Robot& player = world_.GetPlayer();
-
     player.ProcessStatusesStart(); 
 
     Commands cmd = input_.GetCommand();
     int result = 0;
 
+    if (cmd == Commands::ToggleView) {
+        return -1;
+    }
     if (cmd == Commands::Ability1) {
-        player.UseAbility(0);
+        int idx = player.FindAbilityIndex("Heal");
+        if (idx != -1) result = player.UseAbility(idx) ? 1 : 0;
     }
     else if (cmd == Commands::Ability2) {
-        player.UseAbility(1);
+        int idx = player.FindAbilityIndex("Melee Strike");
+        if (idx != -1) result = player.UseAbility(idx) ? 1 : 0;
     }
-    else if (cmd == Commands::Ability3 || cmd == Commands::Ability4) {
-        int tx, ty;
-        if (cmd == Commands::Ability4) {
-            std::cout << "Введите смещение для телепорта (X Y): ";
+    else if (cmd == Commands::Ability3) {
+        int idx = player.FindAbilityIndex("Range Attack");
+        if (idx != -1) {
+            int tx, ty;
+            std::cout << "Введите смещение для выстрела (X Y): \n";
             std::cin >> tx >> ty;
-            player.UseAbility(3, tx, ty);
+            result = player.UseAbility(idx, tx, ty) ? 1 : 0;
+        }
+    }
+    else if (cmd == Commands::Ability4) {
+        int idx = player.FindAbilityIndex("Teleportation");
+        if (idx != -1) {
+            int tx, ty;
+            std::cout << "Введите смещение для телепорта (X Y): \n";
+            std::cin >> tx >> ty;
+            result = player.UseAbility(idx, tx, ty) ? 1 : 0;
+            if (result == 0) std::cout << "Телепорт не удался (стена, занято или далеко)!\n";
         } else {
-            std::cout << "Введите смещение для выстрела (X Y): ";
-            std::cin >> tx >> ty;
-            player.UseAbility(2, tx, ty);
+            std::cout << "У вас нет этой способности!\n";
         }
     }
     else if (cmd != Commands::Invalid) {
@@ -54,7 +67,6 @@ int EntityController::PlayerTurn() {
     }
 
     player.ProcessStatusesEnd();
-
     return result;
 }
 
@@ -142,6 +154,7 @@ bool EntityController::GetDelta(Commands dir, int& dx, int& dy) {
         case Commands::Ability3: return false;
         case Commands::Ability4: return false;
         case Commands::Invalid: return false;
+        case Commands::ToggleView: return false;
     }
     return false;
 }

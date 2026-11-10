@@ -2,6 +2,7 @@
 #define GAME_LOOP_HPP
 
 #include "EntityController.hpp"
+#include "Renderer.hpp"
 
 class World;
 class Renderer;
@@ -17,8 +18,11 @@ private:
     Renderer& renderer_;
     InputController& input_;
     EntityController entity_controller_;
+
     void HandleRankUp();
+
     int turn_ = 0;
+    ViewMode current_view_mode_ = ViewMode::Standard;
 };
 
 #endif

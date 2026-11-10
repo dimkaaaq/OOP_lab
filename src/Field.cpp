@@ -34,57 +34,47 @@ bool Field::CanMoveTo(int x, int y) const {
 }
 
 Field Field::GenerateField() {
-    Field field = Field(20, 14);
-
-    for (int x = 2; x <= 6; ++x)   field.SetObstacle(x, 12);
-    for (int x = 13; x <= 17; ++x) field.SetObstacle(x, 12);
-
-    for (int y = 9; y <= 11; ++y)  field.SetObstacle(9, y);
-
-    for (int x = 3; x <= 7; ++x)   field.SetObstacle(x, 8);
-    for (int x = 12; x <= 16; ++x) field.SetObstacle(x, 8);
-
-    for (int y = 4; y <= 6; ++y) {
-        field.SetObstacle(3, y);
-        field.SetObstacle(16, y);
-    }
-    for (int x = 7; x <= 12; ++x)  field.SetObstacle(x, 2);
-
-    for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 5, 2);
-    for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 6, 2);
-
-    for (int x = 14; x <= 18; ++x) field.SetPassability(x, 9,  2);
-    for (int x = 14; x <= 18; ++x) field.SetPassability(x, 10, 2);
-
-    field.SetPassability(10, 6, 2);
-    field.SetPassability(10, 5, 2);
-
-    for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 1, 3);
-    for (int x = 1; x <= 4; ++x)   field.SetPassability(x, 2, 3);
-
-    for (int x = 15; x <= 18; ++x) field.SetPassability(x, 3, 3);
-    for (int x = 15; x <= 18; ++x) field.SetPassability(x, 4, 3);
-
-    field.SetPassability(11, 10, 3);
-    field.SetPassability(12, 10, 3);
-    field.SetPassability(11, 11, 3);
+    Field field = Field(30, 20);
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> chance(0, 99);
-    std::uniform_int_distribution<> type_dist(0, 3);
 
-    for (int  y = 0; y < field.GetHeight(); ++y) {
-        for (int  x = 0; x < field.GetWidth(); ++x) {
+    for (int y = 0; y < field.GetHeight(); ++y) {
+        for (int x = 0; x < field.GetWidth(); ++x) {
+            int roll = chance(gen);
+            if (roll < 15) {
+                field.SetObstacle(x, y);
+            } else if (roll < 25) {
+                field.SetPassability(x, y, 2);
+            } else if (roll < 30) {
+                field.SetPassability(x, y, 3);
+            }
+        }
+    }
+
+    field.RemoveObstacle(0, 0);
+    field.SetPassability(0, 0, 1);
+    field.RemoveObstacle(10, 12);
+    field.SetPassability(10, 12, 1);
+    field.RemoveObstacle(19, 13);
+    field.SetPassability(19, 13, 1);
+    field.RemoveObstacle(10, 13);
+    field.SetPassability(10, 13, 1);
+
+    std::uniform_int_distribution<> type_dist(0, 3);
+    for (int y = 0; y < field.GetHeight(); ++y) {
+        for (int x = 0; x < field.GetWidth(); ++x) {
             if (!field.CanMoveTo(x, y) || (x == 0 && y == 0)) continue;
             
             int roll = chance(gen);
-            int num_statuses;
+            int num_statuses = 0;
+            
+            if (roll < 5) num_statuses = 1;       
+            else if (roll < 6) num_statuses = 2;  
 
-            if (roll < 10) num_statuses = 1;
-            else if (roll < 12) num_statuses = 2;
             for (int i = 0; i < num_statuses; ++i) {
-                int type = chance(gen);
+                int type = type_dist(gen);
                 std::shared_ptr<IStatus> status;
 
                 if (type == 0) status = std::make_shared<BurnStatus>(3, 5);
@@ -96,6 +86,7 @@ Field Field::GenerateField() {
             }
         }
     }
+    
     return field;
 }
 

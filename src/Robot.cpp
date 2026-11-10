@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include "statuses/ShieldStatus.hpp"
 
 Robot::Robot(int team, int max_health, int damage, int max_energy,
              int required_exp, int speed)
@@ -128,13 +129,6 @@ bool Robot::UseAbility(int index, int target_x, int target_y) {
     return false;
 }
 
-std::string Robot::GetAbilityName(int index) const {
-    if (index >= 0 && index < static_cast<int>(abilities_.size())) {
-        return abilities_[index]->GetName();
-    }
-    return "None";
-}
-
 void Robot::AddStatus(std::shared_ptr<IStatus> status) {
     if (!status) return;
     std::string name = status->GetName();
@@ -195,4 +189,39 @@ void Robot::UpgradeAbility(int idx) {
     if (idx >= 0 && idx < static_cast<int>(abilities_.size())) {
         abilities_[idx]->Upgrade();
     }
+}
+
+int Robot::FindAbilityIndex(const std::string& name) const {
+    for (int i = 0; i < static_cast<int>(abilities_.size()); ++i) {
+        if (abilities_[i]->GetName() == name) {
+            return i; 
+        }
+    }
+    return -1;
+}
+
+int Robot::GetAbilityLevel(int index) const {
+    if (index >= 0 && index < static_cast<int>(abilities_.size())) {
+        return abilities_[index]->GetLevel();
+    }
+    return 0;
+}
+
+std::string Robot::GetAbilityName(int index) const {
+    if (index >= 0 && index < static_cast<int>(abilities_.size())) {
+        return abilities_[index]->GetName();
+    }
+    return "None";
+}
+
+int Robot::GetShieldAmount() const {
+    for (const auto& status : statuses_) {
+        if (status->GetName() == "Shield") {
+            auto shield = std::dynamic_pointer_cast<ShieldStatus>(status);
+            if (shield) {
+                return shield->GetAmount();
+            }
+        }
+    }
+    return 0;
 }

@@ -55,7 +55,10 @@ public:
     int GetPendingRankUps() const { return pending_rank_ups_; }
     void DecreasePendingRankUps() { if (pending_rank_ups_ > 0) pending_rank_ups_--; }
     void UpgradeAbility(int index);
+    int FindAbilityIndex(const std::string& name) const;
+    int GetAbilityLevel(int index) const;
 private:
+
     void TryRankUp();
 
     int team_;

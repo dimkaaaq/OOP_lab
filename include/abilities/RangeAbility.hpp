@@ -13,7 +13,7 @@ public:
     
     int GetEnergyCost() const override;
     std::string GetName() const override;
-    void Upgrade() override { damage_ += 10; }
+    void Upgrade() override { damage_ += 10; level_++; }
     int GetLevel() const override { return level_; }
 private:
     World& world_;
