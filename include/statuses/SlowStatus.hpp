@@ -11,6 +11,7 @@ public:
     void OnTurnEnd(Robot&) override { duration_--; }
     bool IsExpired() const override { return duration_ <= 0; }
     std::string GetName() const override { return "Slow"; }
+    int AbsorbDamage(int damage) override { return damage; }
     std::shared_ptr<IStatus> Clone() const override {
         return std::make_shared<SlowStatus>(duration_);
     }

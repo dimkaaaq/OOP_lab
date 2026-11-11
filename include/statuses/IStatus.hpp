@@ -16,7 +16,7 @@ public:
     virtual bool IsExpired() const = 0;
     virtual std::string GetName() const = 0;
     virtual std::shared_ptr<IStatus> Clone() const = 0;
-    virtual int AbsorbDamage(int damage) { return damage; }
+    virtual int AbsorbDamage(int damage) = 0;
 };
 
 #endif

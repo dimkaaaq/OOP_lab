@@ -9,6 +9,7 @@ public:
     void OnTurnStart(Robot&) override {}
     void OnTurnEnd(Robot&) override {}
     bool IsExpired() const override { return false; }
+    int AbsorbDamage(int damage) override { return damage; }
     std::string GetName() const override { return "Overload"; }
         std::shared_ptr<IStatus> Clone() const override {
         return std::make_shared<OverloadStatus>();

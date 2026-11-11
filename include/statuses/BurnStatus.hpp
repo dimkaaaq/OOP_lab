@@ -10,6 +10,7 @@ public:
     void OnTurnStart(Robot&) override; 
     void OnTurnEnd(Robot&) override { duration_--; }
     bool IsExpired() const override { return duration_ <= 0; }
+    int AbsorbDamage(int damage) override { return damage; }
     std::string GetName() const override { return "Burn"; }
         std::shared_ptr<IStatus> Clone() const override {
         return std::make_shared<BurnStatus>(duration_, damage_);
