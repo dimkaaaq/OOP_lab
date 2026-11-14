@@ -33,6 +33,24 @@ int EntityController::PlayerTurn() {
     if (cmd == Commands::ToggleView) {
         return -1;
     }
+    if (cmd == Commands::Inventory) {
+        Robot& p = world_.GetPlayer();
+        if (p.GetInventorySize() == 0) {
+            std::cout << "\n[!] Инвентарь пуст!\n";
+            return 0;
+        }
+
+        std::cout << "\n Введите номер предмета для использования (1 - " << p.GetInventorySize() << "):";
+
+        int choice;
+        std::cin >> choice;
+
+        if (choice > 0 && choice <= p.GetInventorySize()) {
+            p.UseItem(choice - 1);
+            return 1;
+        }
+        return 0;
+    }
     if (cmd == Commands::Ability1) {
         int idx = player.FindAbilityIndex("Heal");
         if (idx != -1) result = player.UseAbility(idx) ? 1 : 0;
@@ -155,6 +173,7 @@ bool EntityController::GetDelta(Commands dir, int& dx, int& dy) {
         case Commands::Ability4: return false;
         case Commands::Invalid: return false;
         case Commands::ToggleView: return false;
+        case Commands::Inventory: return false;
     }
     return false;
 }

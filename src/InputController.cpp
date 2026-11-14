@@ -19,6 +19,7 @@ Commands InputController::GetCommand() {
         case '3': return Commands::Ability3; // Дальний удар
         case '4': return Commands::Ability4; // Телепортация
         case 'v': case 'V': return Commands::ToggleView;
+        case 'i': case 'I': return Commands::Inventory;
         default: return Commands::Invalid;
     }
 }

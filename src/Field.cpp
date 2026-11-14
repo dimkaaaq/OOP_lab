@@ -4,6 +4,7 @@
 #include "statuses/SlowStatus.hpp"
 #include "statuses/ShieldStatus.hpp"
 #include "statuses/OverloadStatus.hpp"
+#include "statuses/LootStatus.hpp"
 
 Field::Field(int width, int height){
     if (width > kMaxSize) width_ = kMaxSize;
@@ -62,7 +63,7 @@ Field Field::GenerateField() {
     field.RemoveObstacle(10, 13);
     field.SetPassability(10, 13, 1);
 
-    std::uniform_int_distribution<> type_dist(0, 3);
+    std::uniform_int_distribution<> type_dist(0, 4); // <--- БЫЛО 0,3; СТАЛО 0,4 (5 типов)
     for (int y = 0; y < field.GetHeight(); ++y) {
         for (int x = 0; x < field.GetWidth(); ++x) {
             if (!field.CanMoveTo(x, y) || (x == 0 && y == 0)) continue;
@@ -80,7 +81,8 @@ Field Field::GenerateField() {
                 if (type == 0) status = std::make_shared<BurnStatus>(3, 5);
                 else if (type == 1) status = std::make_shared<SlowStatus>(2);
                 else if (type == 2) status = std::make_shared<ShieldStatus>(10);
-                else status = std::make_shared<OverloadStatus>();
+                else if (type == 3) status = std::make_shared<OverloadStatus>();
+                else if (type == 4) status = std::make_shared<LootStatus>(); 
 
                 field.GetCellRef(x, y).AddStatus(status);
             }

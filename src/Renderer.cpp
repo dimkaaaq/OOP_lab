@@ -12,11 +12,13 @@
 std::string Renderer::CellSymbol(const Field& field, int x, int y) {
     const Cell& cell = field.GetCell(x, y);
     for (const auto& status : cell.GetStatuses()) {
+        std::string name = status->GetName();
         //std::string name = status->GetName();
         //if (name == "Shield")   return "S ";
         //if (name == "Burn")     return "! ";
         //if (name == "Slow")     return "% ";
         //if (name == "Overload") return "? ";
+        if (name == "Loot") return "$ ";
         return "? ";
     }
 
@@ -84,6 +86,7 @@ void Renderer::Render(const World& world, const Vision& vision, ViewMode mode) {
                 else if (symbol == "E ") color = "\033[31m"; // Враг - красный
                 else if (symbol == "# ") color = "\033[90m"; // Стена - серый
                 else if (symbol == "! " || symbol == "S " || symbol == "% " || symbol == "? ") color = "\033[33m"; // Ловушки - желтый
+                else if (symbol == "$ ") color = "\033[36m"; // Лут - бирюзовый
             }
             std::cout << color << symbol << reset;
         }
@@ -118,8 +121,12 @@ void Renderer::Render(const World& world, const Vision& vision, ViewMode mode) {
             else if (mode == ViewMode::Standard) std::cout << "Interface: Стандартная подсветка";
             else std::cout << "Interface: Монохром";
             
+        } else if (row_index == 8) {
+            std::cout << "----- INVENTORY -----";
+        } else if (row_index >= 9 && row_index < 9 + player.GetInventorySize()) {
+            int item_index = row_index - 9;
+            std::cout << item_index + 1 << ". " << player.GetItemName(item_index);
         }
-
         std::cout << "\n";
     }
 

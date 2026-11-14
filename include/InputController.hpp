@@ -5,6 +5,7 @@ enum class Commands {
     Up, Down, Left, Right,
     Ability1, Ability2, Ability3, Ability4,
     ToggleView,
+    Inventory,
     Invalid
 };
 

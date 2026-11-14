@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <memory>
+
 #include "abilities/IAbility.hpp"
 #include "statuses/IStatus.hpp"
+#include "items/IItem.hpp"
 
 class Robot {
 public:
@@ -57,6 +59,13 @@ public:
     void UpgradeAbility(int index);
     int FindAbilityIndex(const std::string& name) const;
     int GetAbilityLevel(int index) const;
+    
+    void AddItem(std::shared_ptr<IItem> item);
+    bool UseItem(int index);
+    int GetInventorySize() const;
+    std::string GetItemName(int index) const;
+
+    void DecreaseDamage(int value); 
 private:
 
     void TryRankUp();
@@ -77,6 +86,7 @@ private:
 
     std::vector<std::shared_ptr<IAbility>> abilities_;
     std::vector<std::shared_ptr<IStatus>> statuses_;
+    std::vector<std::shared_ptr<IItem>> inventory_;
 };
 
 #endif

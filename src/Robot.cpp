@@ -225,3 +225,34 @@ int Robot::GetShieldAmount() const {
     }
     return 0;
 }
+
+void Robot::AddItem(std::shared_ptr<IItem> item) {
+    if (item) {
+        return inventory_.push_back(item);
+    }
+}
+
+bool Robot::UseItem(int index) {
+    if (index >= 0 && index < static_cast<int>(inventory_.size())) {
+        inventory_[index]->Use(*this);
+        inventory_.erase(inventory_.begin() + index);
+        return true;
+    }
+    return false;
+}
+
+int Robot::GetInventorySize() const {
+    return inventory_.size();
+}
+
+std::string Robot::GetItemName(int index) const {
+    if (index >= 0 && index < static_cast<int>(inventory_.size())) {
+        return inventory_[index]->GetName();
+    }
+    return "None";
+}
+
+void Robot::DecreaseDamage(int value) {
+    damage_ -= value;
+    if (damage_ < 0) damage_ = 0;
+}
