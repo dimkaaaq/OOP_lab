@@ -7,7 +7,6 @@ class Vision {
 public:
     Vision(int width, int height);
     
-    // Убрали const Field& field, теперь только координаты и радиус
     void Update(int px, int py, int radius);
 
     bool IsVisible(int x, int y) const;
