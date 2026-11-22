@@ -18,7 +18,6 @@ void Vision::Update(int px, int py, int radius) {
             int x = px + dx;
             int y = py + dy;
             
-            // Проверка границ теперь своя, без Field
             if (x < 0 || y < 0 || x >= width_ || y >= height_) continue;
             
             visible_[y][x] = true;

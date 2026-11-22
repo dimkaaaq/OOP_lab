@@ -12,11 +12,20 @@ void World::AddPlayer(Robot& player, int x, int y) {
     if (!field_.CanMoveTo(x, y)) {
         throw std::invalid_argument("Player cannot spawn on an obstacle");
     }
-    if (GetRobotAt(x, y) != nullptr) {
-        throw std::invalid_argument("Cell is already occupied");
+
+    if (player_ == nullptr) {
+        if (GetRobotAt(x, y) != nullptr) {
+            throw std::invalid_argument("Cell is already occupied");
+        }
+        player_ = &player;
+        positions_[&player] = {x, y};
+    } 
+    else if (player_ == &player) {
+        MoveRobot(&player, x, y);
+    } 
+    else {
+        throw std::invalid_argument("Another player already exists in the world");
     }
-    player_ = &player;
-    positions_[&player] = {x, y};
 }
 
 void World::AddEnemy(Robot& enemy, int x, int y) {
@@ -61,4 +70,11 @@ Robot* World::GetRobotAt(int x, int y) const {
         }
     }
     return nullptr;
+}
+
+void World::ClearEnemies() {
+    for (Robot* enemy : enemies_) {
+        positions_.erase(enemy);
+    }
+    enemies_.clear();
 }

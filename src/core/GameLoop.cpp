@@ -1,7 +1,7 @@
 #include "core/GameLoop.hpp"
 
 #include "core/InputController.hpp"
-#include "core/Renderer.hpp"
+#include "ui/Renderer.hpp"
 #include "core/Robot.hpp"
 #include "core/World.hpp"
 

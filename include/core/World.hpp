@@ -24,7 +24,7 @@ public:
     void MoveRobot(Robot* robot, int x, int y);
 
     Robot* GetRobotAt(int x, int y) const;
-
+    void ClearEnemies();
 private:
     Field& field_;
     Robot* player_ = nullptr;

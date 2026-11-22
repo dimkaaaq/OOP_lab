@@ -1,24 +1,10 @@
 #include <iostream>
-#include <vector>
 
-#include "core/Field.hpp"
-#include "core/GameLoop.hpp"
+#include "ui/Menu.hpp"
+#include "ui/Renderer.hpp"
 #include "core/InputController.hpp"
-#include "core/Renderer.hpp"
-#include "core/Robot.hpp"
-#include "core/World.hpp"
-
-#include "abilities/HealAbility.hpp"
-#include "abilities/MeleeAbility.hpp"
-#include "abilities/RangeAbility.hpp"
-#include "abilities/TeleportAbility.hpp"
-
-#include "statuses/BurnStatus.hpp"
-#include "statuses/ShieldStatus.hpp"
-#include "statuses/SlowStatus.hpp"
-#include "statuses/OverloadStatus.hpp"
-
-#include <random>
+#include "core/Game.hpp"
+#include "levels/RandomLevelGenerator.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -37,36 +23,39 @@ int main() {
     SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 #endif
 
-    Field field = Field::GenerateField();
-    
-    Robot player(1, 40, 10, 100, 100, 2);
-    Robot enemy1(2, 30, 8, 100, 100, 2);
-    Robot enemy2(2, 30, 8, 100, 100, 2);
-    Robot enemy3(2, 30, 8, 100, 100, 2);
+    Menu menu;
 
-    World world(field);
-    world.AddPlayer(player, 0, 0);
-    world.AddEnemy(enemy1, 10, 12);
-    world.AddEnemy(enemy2, 19, 13);
-    world.AddEnemy(enemy3, 10, 13);
+    while (true) {
+        MenuChoice choice = menu.ShowMainMenu();
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, 1);
+        if (choice == MenuChoice::Exit) {
+            break;
+        } 
+        else if (choice == MenuChoice::NewGame) {
+            RandomLevelGenerator generator(3);
+            
+            Renderer renderer;
+            InputController input;
+            
+            Game<RandomLevelGenerator> game(generator, renderer, input);
+            game.Run();
+            
 
-    for (Robot* enemy : world.GetEnemies()) {
-        if (dist(gen) == 0) {
-            enemy->AddAbility(std::make_shared<HealAbility>());
-        } else {
-            enemy->AddAbility(std::make_shared<TeleportAbility>(world));
+            std::cout << "\nНажмите Enter, чтобы вернуться в меню...";
+            std::cin.get();
+            std::cin.get();
+        }
+        else if (choice == MenuChoice::LoadGame) {
+            std::cout << "\nЗагрузка пока не реализована. Нажмите Enter...";
+            std::cin.get();
+            std::cin.get();
+        }
+        else {
+            std::cout << "\nНеверный выбор. Нажмите Enter...";
+            std::cin.get();
+            std::cin.get();
         }
     }
-
-    Renderer renderer;
-    InputController input;
-
-    GameLoop game_loop(world, renderer, input);
-    game_loop.Start();
 
     return 0;
 }
