@@ -11,10 +11,7 @@
 EntityController::EntityController(World& world, InputController& input)
     : world_(world), input_(input),
       vision_(world.GetField().GetWidth(), world.GetField().GetHeight()),
-      rng_(std::random_device{}())
-{
-    UpdateVision();
-}
+      rng_(std::random_device{}()) {}
 
 void EntityController::UpdateVision() {
     Robot& player = world_.GetPlayer();

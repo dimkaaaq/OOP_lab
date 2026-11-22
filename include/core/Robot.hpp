@@ -53,7 +53,7 @@ public:
     bool HasStatus(const std::string& name) const;
     int GetShieldAmount() const;
     void TakeShieldDamage(int& damage);
-
+    void ClearStatuses() { statuses_.clear(); }
     int GetPendingRankUps() const { return pending_rank_ups_; }
     void DecreasePendingRankUps() { if (pending_rank_ups_ > 0) pending_rank_ups_--; }
     void UpgradeAbility(int index);

@@ -1,8 +1,8 @@
 #ifndef GAME_LOOP_HPP
 #define GAME_LOOP_HPP
 
-#include "EntityController.hpp"
-#include "Renderer.hpp"
+#include "core/EntityController.hpp"
+#include "ui/Renderer.hpp"
 
 class World;
 class Renderer;

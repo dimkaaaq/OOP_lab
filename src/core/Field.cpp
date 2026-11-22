@@ -63,7 +63,7 @@ Field Field::GenerateField() {
     field.RemoveObstacle(10, 13);
     field.SetPassability(10, 13, 1);
 
-    std::uniform_int_distribution<> type_dist(0, 4); // <--- БЫЛО 0,3; СТАЛО 0,4 (5 типов)
+    std::uniform_int_distribution<> type_dist(0, 4);
     for (int y = 0; y < field.GetHeight(); ++y) {
         for (int x = 0; x < field.GetWidth(); ++x) {
             if (!field.CanMoveTo(x, y) || (x == 0 && y == 0)) continue;
