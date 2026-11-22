@@ -1,5 +1,5 @@
 #include "statuses/BurnStatus.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 #include <iostream>
 
 void BurnStatus::OnTurnStart(Robot& target) {

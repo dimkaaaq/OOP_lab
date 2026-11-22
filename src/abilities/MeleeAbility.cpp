@@ -1,6 +1,6 @@
 #include "MeleeAbility.hpp"
-#include "Robot.hpp"
-#include "World.hpp"
+#include "core/Robot.hpp"
+#include "core/World.hpp"
 #include "math.h"
 
 MeleeAbility::MeleeAbility(World& world) : world_(world) {}

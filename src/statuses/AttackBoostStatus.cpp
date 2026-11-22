@@ -1,5 +1,5 @@
 #include "statuses/AttackBoostStatus.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 
 void AttackBoostStatus::Apply(Robot& target) {
     target.IncreaseDamage(15);

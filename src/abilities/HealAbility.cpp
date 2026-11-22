@@ -1,5 +1,5 @@
 #include "HealAbility.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 #include "statuses/ShieldStatus.hpp"
 
 bool HealAbility::Use(Robot& caster, int, int) {

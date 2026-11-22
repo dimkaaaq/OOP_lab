@@ -1,4 +1,4 @@
-#include "Cell.hpp"
+#include "core/Cell.hpp"
 #include <cstdlib>
 
 Cell::Cell(bool passable, int passability)

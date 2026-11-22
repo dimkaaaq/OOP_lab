@@ -1,6 +1,6 @@
 #include "RangeAbility.hpp"
-#include "World.hpp"
-#include "Robot.hpp"
+#include "core/World.hpp"
+#include "core/Robot.hpp"
 #include <cmath>
 #include "statuses/BurnStatus.hpp"
 

@@ -1,9 +1,9 @@
-#include "GameLoop.hpp"
+#include "core/GameLoop.hpp"
 
-#include "InputController.hpp"
-#include "Renderer.hpp"
-#include "Robot.hpp"
-#include "World.hpp"
+#include "core/InputController.hpp"
+#include "core/Renderer.hpp"
+#include "core/Robot.hpp"
+#include "core/World.hpp"
 
 #include "abilities/HealAbility.hpp"
 #include "abilities/MeleeAbility.hpp"

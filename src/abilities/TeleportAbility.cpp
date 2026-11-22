@@ -1,7 +1,7 @@
 #include "TeleportAbility.hpp"
-#include "World.hpp"
-#include "Robot.hpp"
-#include "Field.hpp"
+#include "core/World.hpp"
+#include "core/Robot.hpp"
+#include "core/Field.hpp"
 #include <cmath>
 
 TeleportAbility::TeleportAbility(World& world) : world_(world) {}

@@ -1,4 +1,4 @@
-#include "Vision.hpp"
+#include "core/Vision.hpp"
 
 Vision::Vision(int width, int height)
  : width_(width), height_(height), visible_(height, std::vector<bool>(width, false)),

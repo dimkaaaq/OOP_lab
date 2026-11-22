@@ -1,5 +1,5 @@
 #include "statuses/LootStatus.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 
 #include <iostream>
 #include <random>

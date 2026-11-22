@@ -1,5 +1,5 @@
 #include "items/EnergyPotion.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 #include <iostream>
 
 void EnergyPotion::Use(Robot& target) {

@@ -1,12 +1,12 @@
-#include "EntityController.hpp"
+#include "core/EntityController.hpp"
 
 #include <random>
 #include "iostream"
 
-#include "Field.hpp"
-#include "Robot.hpp"
-#include "World.hpp"
-#include "Cell.hpp"
+#include "core/Field.hpp"
+#include "core/Robot.hpp"
+#include "core/World.hpp"
+#include "core/Cell.hpp"
 
 EntityController::EntityController(World& world, InputController& input)
     : world_(world), input_(input),

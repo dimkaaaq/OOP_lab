@@ -1,5 +1,5 @@
 #include "items/HealthPotion.hpp"
-#include "Robot.hpp"
+#include "core/Robot.hpp"
 #include <iostream>
 
 void HealthPotion::Use(Robot& target) {
